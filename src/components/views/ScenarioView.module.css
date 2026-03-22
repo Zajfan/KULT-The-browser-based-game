@@ -1,0 +1,59 @@
+@layer components {
+.page { max-width: 980px; animation: fade-in-up .25s var(--ease-out) both; }
+.title { font-family: var(--display); font-size: 1.4rem; color: var(--ink-bright); margin-bottom: 6px; }
+.sub { font-style: italic; color: var(--ink-dim); font-size: 0.88rem; }
+.layout { display: grid; grid-template-columns: 200px 1fr; gap: 28px; margin-top: 4px; }
+.index { display: flex; flex-direction: column; gap: 6px; }
+.scenBtn { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; text-align: left; transition: border-color .15s, background .15s;
+  &:hover { border-color: var(--border-lit); background: var(--raised); }
+  &.scenOn { border-color: var(--gold-dark); background: color-mix(in oklch, var(--gold-shadow) 10%, var(--surface)); }
+  &.scenDone { opacity: 0.6; }
+}
+.scenName { font-family: var(--display); font-size: 0.76rem; color: var(--ink-bright); }
+.scenMeta { display: flex; justify-content: space-between; }
+.scenPips { display: flex; gap: 3px; margin-top: 2px; }
+.scenPip { width: 16px; height: 4px; background: var(--border); border-radius: 99px; transition: background .3s; }
+.pipDone { background: var(--gold); }
+.pipNow  { background: var(--red); animation: pulse-glow 2s ease-in-out infinite; }
+.scenLocked { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); opacity: 0.35; }
+.body { min-height: 400px; }
+.scenario { animation: fade-in-up .2s var(--ease-out) both; }
+.scenHeader { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 16px; }
+.scenTitle { font-family: var(--display); font-size: 1.1rem; color: var(--gold-lit); }
+.scenSub { font-style: italic; color: var(--ink-dim); font-size: 0.82rem; margin-top: 4px; }
+.scenTags { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; flex-shrink: 0; }
+.scenSynopsis { font-size: 0.87rem; font-style: italic; color: var(--ink); line-height: 1.75; border-left: 2px solid var(--border-lit); padding-left: 14px; margin-bottom: 10px; text-wrap: pretty; }
+.themes { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 4px; }
+.acts { display: flex; flex-direction: column; gap: 8px; }
+.act { border: 1px solid var(--border); border-radius: var(--radius); overflow: clip; transition: border-color .15s;
+  &.actNow { border-color: var(--red); }
+  &.actDone { border-color: var(--gold-dark); opacity: 0.75; }
+  &.actLocked { opacity: 0.4; }
+  &:not(.actLocked) { cursor: pointer; &:hover { border-color: var(--border-glow); } }
+}
+.actHeader { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface); }
+.actNum { font-family: var(--mono); font-size: 0.65rem; color: var(--ink-dim); flex-shrink: 0; }
+.actTitle { font-family: var(--display); font-size: 0.82rem; color: var(--ink-bright); flex: 1; }
+.actLock { font-family: var(--mono); font-size: 0.62rem; color: var(--ink-faint); }
+.actBody { padding: 14px 16px; background: var(--raised); display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--border); animation: fade-in-up .2s var(--ease-out); }
+.actDesc { font-size: 0.83rem; font-style: italic; color: var(--ink); line-height: 1.7; text-wrap: pretty; }
+.actObjective { background: color-mix(in oklch, var(--surface) 50%, transparent); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
+.objLabel { font-family: var(--display); font-size: 7.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 5px; }
+.actObjective p { font-size: 0.8rem; color: var(--ink); line-height: 1.55; }
+.actLocation { display: flex; justify-content: space-between; align-items: center; }
+.actReveals { background: color-mix(in oklch, var(--gold-shadow) 8%, transparent); border: 1px solid var(--gold-dark); border-radius: var(--radius); padding: 10px 12px; }
+.revLabel { font-family: var(--display); font-size: 7.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-lit); display: block; margin-bottom: 5px; }
+.actReveals p { font-size: 0.8rem; font-style: italic; color: var(--ink); line-height: 1.55; }
+.comps { }
+.compLabel { font-family: var(--display); font-size: 7.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--red-lit); display: block; margin-bottom: 5px; }
+.compList { padding-left: 16px; display: flex; flex-direction: column; gap: 3px; }
+.compList li { font-size: 0.75rem; font-style: italic; color: var(--ink-dim); }
+.endings { margin-top: 4px; }
+.endLabel { font-family: var(--display); font-size: 0.68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-dim); display: block; margin-bottom: 10px; }
+.endingList { display: flex; flex-direction: column; gap: 8px; }
+.ending { border-left: 2px solid var(--border-lit); padding-left: 12px; display: flex; flex-direction: column; gap: 3px;
+  &.achieved { border-left-color: var(--gold-lit); }
+}
+.endName { font-family: var(--display); font-size: 0.78rem; color: var(--ink-bright); }
+.endDesc { font-size: 0.73rem; font-style: italic; color: var(--ink-dim); line-height: 1.5; }
+} /* @layer */

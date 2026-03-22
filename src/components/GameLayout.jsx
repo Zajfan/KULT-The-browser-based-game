@@ -13,6 +13,8 @@ import InventoryView from './views/InventoryView.jsx';
 import QuestView     from './views/QuestView.jsx';
 import CharacterView    from './views/CharacterView.jsx';
 import LoreView        from './views/LoreView.jsx';
+import ArchivesView    from './views/ArchivesView.jsx';
+import ScenarioView    from './views/ScenarioView.jsx';
 import TransmissionView from './views/TransmissionView.jsx';
 
 import CombatOverlay    from './overlays/CombatOverlay.jsx';
@@ -28,16 +30,17 @@ import { checkQuestProgress } from '../data/quests.js';
 import styles from './GameLayout.module.css';
 
 export const VIEWS = [
-  { id:'city',      label:'The City',         glyph:'◈' },
-  { id:'crimes',    label:'Criminal Affairs',  glyph:'⚖' },
-  { id:'rituals',   label:'Rites & Rituals',   glyph:'⛧' },
-  { id:'market',    label:'Black Market',      glyph:'☽' },
-  { id:'factions',  label:'Allegiances',       glyph:'◉' },
-  { id:'inventory', label:'Possessions',       glyph:'◇' },
-  { id:'quests',    label:'Investigations',    glyph:'✦' },
-  { id:'transmission', label:'The Transmission',glyph:'◫' },
-  { id:'lore',         label:'The Codex',        glyph:'📖' },
-  { id:'character',    label:'Self',              glyph:'∞' },
+  { id:'city',         label:'The City',          glyph:'◈' },
+  { id:'crimes',       label:'Criminal Affairs',   glyph:'⚖' },
+  { id:'rituals',      label:'Rites & Rituals',    glyph:'⛧' },
+  { id:'market',       label:'Black Market',       glyph:'☽' },
+  { id:'factions',     label:'Allegiances',        glyph:'◉' },
+  { id:'inventory',    label:'Possessions',        glyph:'◇' },
+  { id:'quests',       label:'Investigations',     glyph:'✦' },
+  { id:'scenarios',    label:'Major Cases',        glyph:'◆' },
+  { id:'transmission', label:'The Transmission',   glyph:'◫' },
+  { id:'archives',     label:'The Archives',       glyph:'📜' },
+  { id:'character',    label:'Self',               glyph:'∞' },
 ];
 
 export default function GameLayout({ character, combat, pendingEvent, actions }) {
