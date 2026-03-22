@@ -7,22 +7,18 @@ import './styles/global.css';
 export default function App() {
   const {
     screen, setScreen,
-    character,
+    character, setCharacter,
     combat,
-    activeModal, setActiveModal,
+    pendingEvent, setPendingEvent,
     startGame, loadSavedGame,
     travel, performAction,
     attackEnemy, fleeCombat,
     commitCrime, performRitual,
+    performTraining,
     useItem, equipItem, buyItem, sellItem,
+    updateNPCTrust, resolveEvent,
+    addLog,
   } = useGameState();
-
-  const actions = {
-    travel, performAction,
-    attackEnemy, fleeCombat,
-    commitCrime, performRitual,
-    useItem, equipItem, buyItem, sellItem,
-  };
 
   if (screen === 'title') {
     return (
@@ -47,9 +43,17 @@ export default function App() {
       <GameLayout
         character={character}
         combat={combat}
-        actions={actions}
-        activeModal={activeModal}
-        setActiveModal={setActiveModal}
+        pendingEvent={pendingEvent}
+        actions={{
+          travel, performAction,
+          attackEnemy, fleeCombat,
+          commitCrime, performRitual,
+          performTraining,
+          useItem, equipItem, buyItem, sellItem,
+          updateNPCTrust, resolveEvent,
+          setPendingEvent, setCharacter,
+          addLog,
+        }}
       />
     );
   }

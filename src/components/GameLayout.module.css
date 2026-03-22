@@ -88,9 +88,9 @@
 .body {
   display: grid;
   grid-template-columns: 220px 1fr 260px;
-  gap: 0;
   flex: 1;
   overflow: hidden;
+  min-height: 0;
 }
 
 .sidebar {
@@ -111,6 +111,42 @@
   background: var(--bg-deep);
   display: flex;
   flex-direction: column;
+}
+
+.timeBanner {
+  background: var(--bg-deep);
+  border-bottom: 1px solid var(--border-dim);
+  padding: 4px 16px;
+  flex-shrink: 0;
+}
+.timeBannerText {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.trainingDrawer {
+  background: var(--bg-deep);
+  border-bottom: 1px solid var(--border-dim);
+  max-height: 280px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.npcBtn {
+  border-color: var(--gold-dim);
+  color: var(--gold-bright);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.npcBtn:hover { border-color: var(--gold-bright); }
+
+.trainActive {
+  border-color: var(--gold-mid) !important;
+  background: rgba(90,74,40,0.3) !important;
 }
 
 @keyframes pulse-red {
