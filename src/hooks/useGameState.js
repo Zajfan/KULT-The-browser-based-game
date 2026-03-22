@@ -278,9 +278,13 @@ export function useGameState() {
 
   return {
     screen,setScreen,character,setCharacter,combat,setCombat,
-    activeModal,setActiveModal,pendingEvent,setPendingEvent,
+    activeModal,setActiveModal,
+    pendingEvent,setPendingEvent,
+    pendingDAEvent,setPendingDAEvent,
     startGame,loadSavedGame,travel,performAction,
     attackEnemy,fleeCombat,commitCrime,performRitual,performTraining,
-    useItem,equipItem,buyItem,sellItem,updateNPCTrust,resolveEvent,addLog,
+    useItem,equipItem,buyItem,sellItem,updateNPCTrust,resolveEvent,
+    advanceScenario,resolveDAEvent,checkDAEvent,
+    addLog,
   };
 }
