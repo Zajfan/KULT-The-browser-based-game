@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import SideNav from './ui/SideNav.jsx';
-import StatusStrip from './ui/StatusStrip.jsx';
-import NarrativeFeed from './ui/NarrativeFeed.jsx';
+import { useState, useEffect, useRef } from 'react';
+import SideNav        from './ui/SideNav.jsx';
+import StatusStrip    from './ui/StatusStrip.jsx';
+import NarrativeFeed  from './ui/NarrativeFeed.jsx';
+import { ToastLayer, useToasts } from './ui/ToastLayer.jsx';
 
-// Views
 import CityView      from './views/CityView.jsx';
 import CrimesView    from './views/CrimesView.jsx';
 import RitualsView   from './views/RitualsView.jsx';
@@ -13,15 +13,16 @@ import InventoryView from './views/InventoryView.jsx';
 import QuestView     from './views/QuestView.jsx';
 import CharacterView from './views/CharacterView.jsx';
 
-// Overlays
 import CombatOverlay    from './overlays/CombatOverlay.jsx';
 import EventOverlay     from './overlays/EventOverlay.jsx';
 import NPCOverlay       from './overlays/NPCOverlay.jsx';
 import BreakdownOverlay from './overlays/BreakdownOverlay.jsx';
-import { ToastLayer, useToasts } from './ui/ToastLayer.jsx';
+import DreamOverlay     from './overlays/DreamOverlay.jsx';
+import MortalOverlay    from './overlays/MortalOverlay.jsx';
 
 import { getNPCForLocation } from '../data/npcs.js';
 import { getTimeDescription } from './ui/timeUtils.js';
+import { checkQuestProgress } from '../data/quests.js';
 import styles from './GameLayout.module.css';
 
 export const VIEWS = [
@@ -36,80 +37,164 @@ export const VIEWS = [
 ];
 
 export default function GameLayout({ character, combat, pendingEvent, actions }) {
-  const [view, setView]             = useState('city');
-  const [npcOpen, setNpcOpen]       = useState(false);
-  const [showBreakdown, setBreakdown] = useState(false);
+  const [view,         setView]          = useState('city');
+  const [npcOpen,      setNpcOpen]       = useState(false);
+  const [showBreakdown,setBreakdown]     = useState(false);
+  const [dreamState,   setDream]         = useState(null); // { day }
+  const [showMortal,   setMortal]        = useState(false);
   const { toasts, addToast, removeToast } = useToasts();
 
-  const { travel, performAction, attackEnemy, fleeCombat,
+  const prevStabilityRef = useRef(character?.stability ?? 10);
+  const prevWoundsRef    = useRef(character?.wounds ?? 'None');
+  const prevDayRef       = useRef(character?.gameTime?.day ?? 1);
+  const prevInsightRef   = useRef(character?.insight ?? 0);
+
+  const {
+    travel, performAction, attackEnemy, fleeCombat,
     commitCrime, performRitual, performTraining,
     useItem, equipItem, buyItem, sellItem,
     updateNPCTrust, resolveEvent,
-    setPendingEvent, setCharacter, addLog } = actions;
+    setPendingEvent, setCharacter, addLog,
+  } = actions;
 
-  // Breakdown trigger
+  // ── Reactive side-effects ───────────────────────────────────────────────
   useEffect(() => {
-    if ((character?.stability ?? 1) <= 0 && !showBreakdown) setBreakdown(true);
-  }, [character?.stability]);
+    if (!character) return;
+    const stab   = character.stability ?? 10;
+    const wounds = character.wounds ?? 'None';
+    const day    = character.gameTime?.day ?? 1;
+    const insight= character.insight ?? 0;
 
-  // Warning toasts
-  useEffect(() => {
-    if (character?.stability === 2) addToast('Stability faltering — seek treatment.', 'warn');
-  }, [character?.stability]);
-  useEffect(() => {
-    if (character?.wounds === 'Critical') addToast('Critical wounds.', 'danger');
-    if (character?.wounds === 'Mortal')   addToast('Mortal wounds. You are dying.', 'danger');
-  }, [character?.wounds]);
-  useEffect(() => {
-    if ((character?.insight ?? 0) > 0 && character.insight % 2 === 0)
-      addToast(`Insight ${character.insight} — the veil grows thinner.`, 'veil');
-  }, [character?.insight]);
+    // Breakdown trigger
+    if (stab <= 0 && !showBreakdown) setBreakdown(true);
+
+    // Mortal wound trigger
+    if (wounds === 'Mortal' && prevWoundsRef.current !== 'Mortal') setMortal(true);
+
+    // Day change → dream
+    if (day > prevDayRef.current) {
+      setDream({ day });
+      setCharacter(c => ({ ...c, stats: { ...c.stats, daysPlayed: (c.stats?.daysPlayed||1)+1 } }));
+    }
+
+    // Toasts on significant changes
+    if (stab < prevStabilityRef.current && stab <= 3)
+      addToast(`Stability at ${stab}. Your grip on the Illusion is failing.`, 'danger');
+    if (wounds === 'Critical' && prevWoundsRef.current !== 'Critical')
+      addToast('Critical wounds. Find a hospital.', 'danger');
+    if (insight > prevInsightRef.current && insight % 2 === 0)
+      addToast(`Insight ${insight} — the city reveals more of what it truly is.`, 'veil');
+
+    prevStabilityRef.current = stab;
+    prevWoundsRef.current    = wounds;
+    prevDayRef.current       = day;
+    prevInsightRef.current   = insight;
+  }, [character?.stability, character?.wounds, character?.gameTime?.day, character?.insight]);
+
+  // ── Quest progress wiring ───────────────────────────────────────────────
+  const trackQuestProgress = (actionId, locationId) => {
+    if (!character) return;
+    const updates = checkQuestProgress(character, actionId, locationId);
+    if (!updates.length) return;
+
+    setCharacter(c => {
+      const qp = { ...(c.questProgress || {}) };
+      updates.forEach(u => {
+        const prev = qp[u.questId] || { stageIdx: 0, actionCount: 0, completed: false };
+        if (u.questComplete) {
+          qp[u.questId] = { ...prev, stageIdx: u.nextStageIdx, actionCount: 0, completed: true };
+        } else if (u.stageComplete) {
+          qp[u.questId] = { ...prev, stageIdx: u.nextStageIdx, actionCount: 0 };
+        } else {
+          qp[u.questId] = { ...prev, actionCount: u.newCount };
+        }
+      });
+      let n = { ...c, questProgress: qp };
+
+      // Apply quest rewards
+      updates.filter(u => u.stageComplete && u.reward).forEach(u => {
+        const r = u.reward;
+        if (r.thalers)  n.thalers  = (n.thalers||0) + r.thalers;
+        if (r.insight)  n.insight  = Math.min((n.insight||0)+r.insight, n.maxInsight||10);
+        if (r.stabilityLoss) n.stability = Math.max(0, (n.stability||0) - r.stabilityLoss);
+        if (r.factionReward) n.factionStandings = { ...n.factionStandings, [r.factionReward.faction]: (n.factionStandings?.[r.factionReward.faction]||0)+r.factionReward.amount };
+      });
+      return n;
+    });
+
+    updates.forEach(u => {
+      if (u.stageComplete) {
+        addToast(`Investigation: "${u.questName}" — stage complete.`, 'veil');
+        addLog({ type: 'complete', text: `[Investigation: ${u.questName}] Stage complete — ${u.stage.title}. ${u.reward?.text || ''}` });
+      }
+      if (u.questComplete) {
+        addToast(`Investigation concluded: "${u.questName}".`, 'veil');
+      }
+    });
+  };
+
+  // Wrap performAction to also track quests
+  const handleAction = (actionId) => {
+    performAction(actionId);
+    trackQuestProgress(actionId, character?.location);
+  };
+  const handleCrime = (crime) => {
+    commitCrime(crime);
+    trackQuestProgress(crime.id, character?.location);
+  };
+
+  // ── Breakdown ──────────────────────────────────────────────────────────
+  const resolveBreakdown = (effect) => {
+    setCharacter(c => {
+      let n = { ...c };
+      if (effect.stabilityRestore)  n.stability   = Math.min(effect.stabilityRestore, n.maxStability);
+      if (effect.insightGain)        n.insight     = Math.min(n.insight + effect.insightGain, n.maxInsight);
+      if (effect.thalers)            n.thalers     = n.thalers + effect.thalers;
+      if (effect.apRestore)          n.ap          = n.maxAp;
+      if (effect.nerve)              n.nerve       = Math.max(0, n.nerve + effect.nerve);
+      if (effect.guiltStacks)        n.guiltStacks = (n.guiltStacks||0) + effect.guiltStacks;
+      if (effect.factionReward) {
+        const { faction, amount } = effect.factionReward;
+        n.factionStandings = { ...n.factionStandings, [faction]: (n.factionStandings[faction]||0) + amount };
+      }
+      return n;
+    });
+    addLog?.({ type:'system', text:'[Breakdown] You surface from the episode. Something is different.' });
+    setBreakdown(false);
+  };
+
+  // ── Mortal wounds ──────────────────────────────────────────────────────
+  const handleSeekHelp = () => {
+    if ((character?.thalers||0) < 500) {
+      addToast('You cannot afford emergency care. ₮500 required.', 'danger');
+      return;
+    }
+    setCharacter(c => ({ ...c, thalers: c.thalers-500, wounds:'Serious' }));
+    addLog({ type:'heal', text:'Emergency care at St. Aurum. Mortal wounds reduced to Serious. ₮500 spent.' });
+    setMortal(false);
+  };
+  const handleDie = () => {
+    addLog({ type:'system', text:'[Death] The Awakening ends here. The Labyrinth receives you.' });
+    setTimeout(() => { localStorage.clear(); window.location.reload(); }, 2000);
+  };
 
   const currentNPC = getNPCForLocation(character?.location);
   const hour       = character?.gameTime?.hour ?? 8;
   const timeDesc   = getTimeDescription(hour);
   const isDying    = (character?.stability ?? 10) <= 2 || ['Critical','Mortal'].includes(character?.wounds);
 
-  const resolveBreakdown = (effect) => {
-    setCharacter(c => {
-      let n = {...c};
-      if (effect.stabilityRestore) n.stability   = Math.min(effect.stabilityRestore, n.maxStability);
-      if (effect.insightGain)       n.insight     = Math.min(n.insight + effect.insightGain, n.maxInsight);
-      if (effect.thalers)           n.thalers     = n.thalers + effect.thalers;
-      if (effect.apRestore)         n.ap          = n.maxAp;
-      if (effect.nerve)             n.nerve       = Math.max(0, n.nerve + effect.nerve);
-      if (effect.guiltStacks)       n.guiltStacks = (n.guiltStacks||0) + effect.guiltStacks;
-      if (effect.factionReward) {
-        const {faction, amount} = effect.factionReward;
-        n.factionStandings = {...n.factionStandings, [faction]:(n.factionStandings[faction]||0)+amount};
-      }
-      return n;
-    });
-    addLog({type:'system', text:'[Breakdown resolved] You surface. Something has shifted.'});
-    setBreakdown(false);
-    addToast('You return to yourself. The world is different.', 'veil');
-  };
-
   return (
     <div className={`${styles.root} ${isDying ? styles.dying : ''}`}>
-      {/* Left navigation */}
-      <SideNav
-        views={VIEWS} current={view} onSelect={setView}
-        character={character}
-        currentNPC={currentNPC}
-        onOpenNPC={() => setNpcOpen(true)}
-        hour={hour}
-      />
+      <SideNav views={VIEWS} current={view} onSelect={setView}
+        character={character} currentNPC={currentNPC}
+        onOpenNPC={() => setNpcOpen(true)} hour={hour} />
 
-      {/* Right: status strip + content */}
       <div className={styles.right}>
         <StatusStrip character={character} timeDesc={timeDesc} />
-
         <div className={styles.content}>
-          {/* Main view */}
           <div className={styles.viewPane}>
-            {view==='city'      && <CityView      character={character} onTravel={travel} onAction={performAction} onTrain={performTraining} addToast={addToast} />}
-            {view==='crimes'    && <CrimesView    character={character} onCommit={commitCrime} />}
+            {view==='city'      && <CityView      character={character} onTravel={travel} onAction={handleAction} onTrain={performTraining} addToast={addToast} />}
+            {view==='crimes'    && <CrimesView    character={character} onCommit={handleCrime} />}
             {view==='rituals'   && <RitualsView   character={character} onPerform={performRitual} />}
             {view==='market'    && <MarketView    character={character} onBuy={buyItem} onSell={sellItem} />}
             {view==='factions'  && <FactionsView  character={character} />}
@@ -117,28 +202,23 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
             {view==='quests'    && <QuestView     character={character} />}
             {view==='character' && <CharacterView character={character} />}
           </div>
-
-          {/* Narrative feed — right column */}
           <NarrativeFeed log={character?.log} />
         </div>
       </div>
 
-      {/* Overlays */}
-      {combat && <CombatOverlay character={character} combat={combat} onAttack={attackEnemy} onFlee={fleeCombat} />}
-      {pendingEvent && (
-        <EventOverlay
-          event={pendingEvent} character={character}
-          onResolve={resolveEvent}
-          onDismiss={() => setPendingEvent(null)}
-        />
+      {/* Overlays — priority order matters */}
+      {showMortal   && <MortalOverlay    character={character} onSeekHelp={handleSeekHelp} onDie={handleDie} />}
+      {dreamState   && <DreamOverlay     character={character} day={dreamState.day} onDismiss={() => setDream(null)} />}
+      {showBreakdown&& !showMortal && !dreamState && <BreakdownOverlay character={character} onResolve={resolveBreakdown} />}
+      {combat       && !showMortal && !dreamState && <CombatOverlay character={character} combat={combat} onAttack={attackEnemy} onFlee={fleeCombat} />}
+      {pendingEvent && !showMortal && !dreamState && !combat && (
+        <EventOverlay event={pendingEvent} character={character}
+          onResolve={resolveEvent} onDismiss={() => setPendingEvent(null)} />
       )}
-      {npcOpen && currentNPC && (
-        <NPCOverlay
-          npc={currentNPC} character={character}
-          onClose={() => { updateNPCTrust(currentNPC.id, 5); setNpcOpen(false); }}
-        />
+      {npcOpen && currentNPC && !showMortal && (
+        <NPCOverlay npc={currentNPC} character={character}
+          onClose={() => { updateNPCTrust(currentNPC.id, 5); setNpcOpen(false); }} />
       )}
-      {showBreakdown && <BreakdownOverlay character={character} onResolve={resolveBreakdown} />}
 
       <ToastLayer toasts={toasts} onRemove={removeToast} />
     </div>

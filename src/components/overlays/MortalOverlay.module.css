@@ -1,0 +1,8 @@
+@layer components {
+.overlay { position:fixed;inset:0;background:color-mix(in oklch,black 97%,transparent);z-index:350;display:grid;place-items:center;animation:fade-in 1s ease; }
+.modal { max-width:460px;width:100%;padding:48px 40px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;animation:fade-in-up 1.2s var(--ease-out) both; }
+.glyph { font-size:3rem;color:var(--red);animation:heartbeat 2s ease-in-out infinite,glyph-flicker 4s ease-in-out infinite; }
+.title { font-family:var(--display);font-size:1.4rem;color:var(--red-vivid);letter-spacing:0.06em; }
+.text { font-size:0.86rem;font-style:italic;color:var(--ink-dim);line-height:1.75;text-wrap:pretty; }
+.choices { display:flex;flex-direction:column;gap:10px;width:100%;margin-top:8px; }
+} /* @layer */
