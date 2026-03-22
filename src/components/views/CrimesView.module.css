@@ -1,0 +1,18 @@
+.page { max-width: 760px; animation: fadeUp .25s ease; }
+.heading { margin-bottom: 12px; }
+.title { font-family: var(--display); font-size: 1.4rem; color: var(--ink-bright); margin-bottom: 6px; }
+.sub { font-style: italic; color: var(--ink-dim); font-size: 0.88rem; }
+.nerveRow { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.nervePips { display: flex; gap: 3px; }
+.pip { width: 14px; height: 5px; background: var(--border); border-radius: 2px; }
+.pipOn { background: var(--veil-lit); }
+.crimeList { display: flex; flex-direction: column; gap: 20px; }
+.crime { border-left: 2px solid var(--border-lit); padding-left: 16px; transition: border-color .15s; }
+.crime:hover { border-left-color: var(--red); }
+.crime.dim { opacity: 0.35; }
+.crimeHead { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.crimeName { font-family: var(--display); font-size: 0.92rem; color: var(--ink-bright); }
+.crimeDesc { font-style: italic; font-size: 0.84rem; color: var(--ink-dim); line-height: 1.6; margin-bottom: 6px; }
+.crimeMeta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+.outcomes { font-size: 0.75rem; font-style: italic; color: var(--ink-dim); margin-bottom: 8px; line-height: 1.5; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }

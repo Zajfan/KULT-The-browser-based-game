@@ -1,0 +1,29 @@
+.strip {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--deep);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.location {
+  font-family: var(--display);
+  font-size: 8.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.sep { color: var(--border-lit); font-size: 0.8rem; flex-shrink: 0; }
+.desc {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

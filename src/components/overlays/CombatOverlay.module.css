@@ -1,0 +1,19 @@
+@layer components {
+.overlay { position:fixed;inset:0;background:color-mix(in oklch,black 85%,transparent);z-index:200;display:grid;place-items:center;backdrop-filter:blur(4px);animation:fade-in 0.2s ease; }
+.modal { background:var(--surface);border:1px solid var(--red);border-top:3px solid var(--red-lit);border-radius:var(--radius-lg);width:100%;max-width:520px;box-shadow:0 0 60px color-mix(in oklch,var(--blood) 25%,transparent),0 20px 60px black;animation:scale-in 0.25s var(--spring); }
+.header { display:flex;align-items:center;gap:8px;padding:12px 18px;background:color-mix(in oklch,var(--blood-deep) 40%,transparent);border-bottom:1px solid var(--blood);font-family:var(--display);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--red-vivid); }
+.headerGlyph { font-size:1.1rem;animation:heartbeat 2s ease-in-out infinite; }
+.body { padding:18px;display:flex;flex-direction:column;gap:14px; }
+.sides { display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start; }
+.side { display:flex;flex-direction:column;gap:5px; }
+.fighter { font-family:var(--display);font-size:0.88rem;color:var(--ink-bright); }
+.status { font-size:0.75rem;color:var(--ink-dim); }
+.vsSep { font-family:var(--display);font-size:1.1rem;color:var(--red);align-self:center; }
+.hpWrap { height:6px;background:var(--border);border-radius:99px;overflow:clip;margin-block:4px; }
+.hpBar { height:100%;border-radius:99px;transition:width 0.5s var(--ease-out); }
+.enemyDesc { font-size:0.72rem;font-style:italic;color:var(--ink-dim);line-height:1.5; }
+.combatLog { background:var(--deep);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;display:flex;flex-direction:column;gap:4px;max-height:100px;overflow-y:auto; }
+.logLine { display:flex;gap:8px;align-items:baseline; }
+.acts { display:flex;gap:10px; }
+.threat { font-size:0.72rem;font-style:italic;color:var(--red-lit);background:color-mix(in oklch,var(--blood-deep) 40%,transparent);padding:8px 12px;border-radius:var(--radius); }
+} /* @layer */

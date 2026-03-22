@@ -1,0 +1,213 @@
+@layer components {
+
+.nav {
+  width: var(--nav-w);
+  min-width: var(--nav-w);
+  height: 100vh;
+  background: var(--deep);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: clip;
+  flex-shrink: 0;
+
+  /* Subtle right edge glow */
+  box-shadow: 1px 0 0 var(--border),
+              4px 0 16px color-mix(in oklch, var(--void) 80%, transparent);
+}
+
+/* Identity */
+.identity {
+  padding: 22px 18px 16px;
+  border-bottom: 1px solid var(--border);
+  animation: slide-in-left 0.4s var(--ease-out) both;
+}
+
+.sigil {
+  font-size: 1.5rem;
+  color: var(--red);
+  display: block;
+  margin-bottom: 8px;
+  animation: glyph-flicker 7s ease-in-out infinite;
+}
+
+.name {
+  font-family: var(--display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink-bright);
+  letter-spacing: 0.05em;
+  margin-bottom: 3px;
+}
+
+.secret {
+  font-size: 0.7rem;
+  font-style: italic;
+  color: var(--red-lit);
+  opacity: 0.85;
+}
+
+/* Vitals */
+.vitals {
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  border-bottom: 1px solid var(--border);
+}
+
+.vital { display: flex; flex-direction: column; gap: 5px; }
+
+.vitalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.vLabel {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.vVal {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Nav links */
+.links {
+  padding: 6px 0;
+  flex: 1;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 18px;
+  border-left: 2px solid transparent;
+  color: var(--ink-dim);
+  transition: background 0.12s, border-color 0.15s, color 0.12s;
+  position: relative;
+
+  &:hover {
+    background: color-mix(in oklch, white 3%, transparent);
+    border-left-color: var(--border-glow);
+    color: var(--ink);
+  }
+
+  &.active {
+    background: color-mix(in oklch, var(--gold-shadow) 12%, transparent);
+    border-left-color: var(--gold-lit);
+    color: var(--ink-bright);
+
+    /* Subtle trailing glow from the active indicator */
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 40px;
+      background: linear-gradient(90deg,
+        color-mix(in oklch, var(--gold) 8%, transparent),
+        transparent);
+    }
+
+    .glyph { color: var(--gold-lit); }
+    .label { color: var(--ink-bright); }
+  }
+}
+
+.glyph {
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+  transition: color 0.15s;
+  position: relative;
+  z-index: 1;
+}
+
+.label {
+  font-family: var(--display);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  transition: color 0.15s;
+  position: relative;
+  z-index: 1;
+}
+
+/* NPC button */
+.npcBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 18px;
+  background: color-mix(in oklch, var(--gold-shadow) 8%, transparent);
+  border-top: 1px solid var(--gold-dark);
+  border-bottom: 1px solid var(--gold-dark);
+  color: inherit;
+  transition: background 0.15s;
+
+  &:hover {
+    background: color-mix(in oklch, var(--gold-shadow) 20%, transparent);
+  }
+}
+
+.npcIcon { font-size: 1.2rem; flex-shrink: 0; }
+
+.npcInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  text-align: left;
+}
+
+.npcName {
+  font-family: var(--display);
+  font-size: 0.7rem;
+  color: var(--gold-lit);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.npcTitle {
+  font-size: 0.62rem;
+  font-style: italic;
+  color: var(--ink-dim);
+}
+
+/* Clock */
+.clock {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: auto;
+}
+
+.clockTime {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.clockDay {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--ink-faint);
+}
+
+} /* @layer */

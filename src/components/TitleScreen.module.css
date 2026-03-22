@@ -1,46 +1,69 @@
-.wrapper {
+/* ── TitleScreen — container queries, oklch, @starting-style ── */
+
+@layer components {
+
+.wrap {
+  container-type: size;
+  container-name: title;
   width: 100vw;
   height: 100vh;
-  background: #050505;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: var(--void);
+  display: grid;
+  place-items: center;
   position: relative;
-  overflow: hidden;
-}
+  overflow: clip;
 
-.scanlines {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.06) 2px,
-    rgba(0,0,0,0.06) 4px
-  );
-  pointer-events: none;
-  z-index: 1;
-}
+  /* Animated radial pulse from center */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 50%,
+      color-mix(in oklch, var(--blood) 8%, transparent),
+      transparent 70%);
+    animation: pulse-glow 5s ease-in-out infinite;
+    pointer-events: none;
+  }
 
-.bgSigil {
-  position: absolute;
-  font-size: 40vw;
-  color: rgba(139, 26, 26, 0.03);
-  pointer-events: none;
-  z-index: 0;
-  animation: pulse-gold 4s ease-in-out infinite;
-  user-select: none;
-  line-height: 1;
-  transition: color 2s ease;
+  /* Scanline overlay */
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      color-mix(in oklch, black 6%, transparent) 3px,
+      color-mix(in oklch, black 6%, transparent) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
 }
 
 .vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.85) 100%);
+  background: radial-gradient(ellipse 90% 90% at 50% 50%,
+    transparent 30%,
+    color-mix(in oklch, var(--void) 70%, transparent) 100%);
   pointer-events: none;
   z-index: 1;
+}
+
+/* Big background sigil */
+.bgGlyph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: min(60vw, 60vh);
+  color: color-mix(in oklch, var(--blood-deep) 25%, transparent);
+  pointer-events: none;
+  z-index: 0;
+  animation: glyph-flicker 8s ease-in-out infinite;
+  user-select: none;
 }
 
 .content {
@@ -49,100 +72,118 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  max-width: 520px;
-  width: 100%;
-  padding: 40px 24px;
-  text-align: center;
+  gap: 18px;
+  max-width: 480px;
+  padding: 40px 32px;
+
+  /* @starting-style for page load entrance */
+  animation: fade-in-up 0.8s var(--ease-out) both;
+  @starting-style { opacity: 0; translate: 0 20px; }
 }
 
 .eyebrow {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   width: 100%;
-  justify-content: center;
-}
 
-.eyebrowLine {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--border-bright));
-}
-.eyebrow .eyebrowLine:last-child {
-  background: linear-gradient(to left, transparent, var(--border-bright));
-}
+  span.line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent,
+      color-mix(in oklch, var(--gold) 40%, transparent));
 
-.eyebrowText {
-  font-family: var(--font-display);
-  font-size: 9px;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--gold-bright);
-  white-space: nowrap;
+    &:last-child {
+      background: linear-gradient(270deg,
+        transparent,
+        color-mix(in oklch, var(--gold) 40%, transparent));
+    }
+  }
+
+  span.text {
+    font-family: var(--display);
+    font-size: 8px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold-lit);
+    white-space: nowrap;
+  }
 }
 
 .titleBlock {
   position: relative;
-  line-height: 1;
+  display: grid;
+  place-items: center;
 }
 
-.titleKult {
-  font-family: var(--font-display);
-  font-size: 10rem;
+.titleText {
+  font-family: var(--display);
+  font-size: clamp(5rem, 18vw, 10rem);
   font-weight: 900;
   letter-spacing: 0.15em;
+  line-height: 1;
   color: transparent;
-  -webkit-text-stroke: 1px var(--red-accent);
+
+  /* Use oklch for the stroke — more vivid than hsl */
+  -webkit-text-stroke: 1.5px oklch(50% 0.19 18);
+
+  /* Layered text shadows for depth */
   text-shadow:
-    0 0 40px rgba(180, 40, 40, 0.4),
-    0 0 80px rgba(180, 40, 40, 0.15);
+    0 0 40px color-mix(in oklch, var(--red) 35%, transparent),
+    0 0 100px color-mix(in oklch, var(--blood) 15%, transparent),
+    0 2px 4px rgba(0,0,0,0.8);
+
+  animation: glyph-flicker 9s ease-in-out infinite;
   user-select: none;
-  animation: flicker 8s ease-in-out infinite;
+
+  /* Scroll-driven shimmer on title */
+  &::before {
+    content: 'KULT';
+    position: absolute;
+    inset: 0;
+    color: color-mix(in oklch, var(--red-lit) 15%, transparent);
+    -webkit-text-stroke: 0;
+    filter: blur(12px);
+    animation: pulse-glow 4s ease-in-out infinite;
+    pointer-events: none;
+  }
 }
 
-.glitch .titleKult {
-  -webkit-text-stroke: 1px var(--red-vivid);
-  text-shadow:
-    2px 0 var(--red-vivid),
-    -2px 0 #4a8acb,
-    0 0 40px rgba(220, 60, 60, 0.8);
-}
-
-.titleGlyph {
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1.4rem;
-  color: var(--red-bright);
-  animation: pulse-red 3s ease-in-out infinite;
+.underGlyph {
+  font-size: 1.2rem;
+  color: var(--red);
+  animation: pulse-glow 3s ease-in-out infinite, heartbeat 4s ease-in-out infinite;
+  animation-delay: 0s, 0.5s;
+  margin-top: -6px;
 }
 
 .tagline {
-  font-family: var(--font-body);
-  font-size: 1rem;
+  font-family: var(--serif);
+  font-size: 0.95rem;
   font-style: italic;
-  color: var(--text-secondary);
-  letter-spacing: 0.06em;
-  margin-top: -8px;
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .lore {
-  max-width: 400px;
-  background: rgba(13,13,13,0.8);
-  border: 1px solid var(--border-dim);
-  border-left: 2px solid var(--red-bright);
+  max-width: 380px;
+  background: color-mix(in oklch, var(--surface) 90%, transparent);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--blood);
+  border-radius: var(--radius);
   padding: 14px 18px;
-  border-radius: var(--radius-sm);
-}
+  backdrop-filter: blur(8px);
 
-.lore p {
-  font-family: var(--font-body);
-  font-size: 0.82rem;
-  color: var(--text-secondary);
-  line-height: 1.7;
-  font-style: italic;
+  p {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--ink-dim);
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
 }
 
 .actions {
@@ -150,18 +191,15 @@
   flex-direction: column;
   gap: 10px;
   width: 100%;
-  max-width: 260px;
+  max-width: 280px;
 }
 
-.mainBtn {
-  width: 100%;
+/* Container query — compact layout on small windows */
+@container title (max-height: 600px) {
+  .content { gap: 10px; padding: 20px; }
+  .lore { display: none; }
+  .titleText { font-size: 5rem; }
 }
-
-.creditBtn {
-  opacity: 0.5;
-  font-size: 8px;
-}
-.creditBtn:hover { opacity: 1; }
 
 .footer {
   display: flex;
@@ -169,29 +207,13 @@
   gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
-  font-family: var(--font-display);
+  font-family: var(--display);
   font-size: 7px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text-dim);
-  margin-top: 8px;
+  color: var(--ink-faint);
+
+  .dot { color: var(--border-lit); }
 }
 
-.dot { color: var(--border-bright); }
-
-@keyframes pulse-red {
-  0%, 100% { text-shadow: 0 0 4px rgba(180,40,40,0.3); }
-  50% { text-shadow: 0 0 12px rgba(180,40,40,0.6); }
-}
-@keyframes pulse-gold {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
-}
-@keyframes flicker {
-  0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.8; }
-  94% { opacity: 1; }
-  97% { opacity: 0.85; }
-  98% { opacity: 1; }
-}
+} /* @layer */

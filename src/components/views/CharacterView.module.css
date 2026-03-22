@@ -1,0 +1,23 @@
+@layer components {
+.page { max-width: 820px; animation: fade-in-up .25s var(--ease-out) both; }
+.identity { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 4px; }
+.sigil { font-size: 2rem; color: var(--red); animation: glyph-flicker 7s ease-in-out infinite; flex-shrink: 0; }
+.name { font-family: var(--display); font-size: 1.5rem; color: var(--ink-bright); margin-bottom: 4px; }
+.secret { font-family: var(--display); font-size: 0.72rem; color: var(--red-lit); letter-spacing: 0.06em; margin-bottom: 6px; }
+.ability { font-size: 0.78rem; font-style: italic; color: var(--gold); line-height: 1.55; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.sh { font-family: var(--display); font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 10px; }
+.attrs { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+.attr { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 7px 8px; display: flex; justify-content: space-between; align-items: center; }
+.attrLabel { font-family: var(--display); font-size: 0.6rem; letter-spacing: 0.1em; color: var(--ink-dim); }
+.attrVal { font-size: 0.9rem; color: var(--ink-dim); }
+.pos { color: var(--vital-lit) !important; }
+.neg { color: var(--red-vivid) !important; }
+.traits { display: flex; flex-direction: column; gap: 6px; }
+.trait { display: flex; flex-direction: column; gap: 3px; }
+.stats { display: flex; flex-direction: column; gap: 4px; }
+.statRow { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.progBlock { display: flex; flex-direction: column; gap: 10px; }
+.progItem { display: flex; flex-direction: column; gap: 5px; }
+.danger { margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--border); }
+} /* @layer */

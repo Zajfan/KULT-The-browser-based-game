@@ -1,0 +1,24 @@
+@layer components {
+.page { max-width: 760px; animation: fade-in-up .25s var(--ease-out) both; }
+.title { font-family: var(--display); font-size: 1.4rem; color: var(--ink-bright); margin-bottom: 6px; }
+.group { margin-bottom: 24px; }
+.groupHead { margin-bottom: 12px; }
+.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  background: var(--surface);
+  display: flex; flex-direction: column; gap: 5px;
+  transition: border-color 0.2s;
+  &:hover { border-color: var(--border-lit); }
+  &.equipped { border-color: var(--gold-dark); background: color-mix(in oklch, var(--gold-shadow) 10%, var(--surface)); }
+}
+.itemRow { display: flex; align-items: flex-start; gap: 8px; }
+.iIcon { font-size: 1.2rem; flex-shrink: 0; }
+.iInfo { flex: 1; }
+.iName { font-family: var(--display); font-size: 0.78rem; color: var(--ink-bright); display: block; margin-bottom: 3px; }
+.qty { font-family: var(--mono); font-size: 0.72rem; color: var(--gold); background: var(--gold-shadow); border: 1px solid var(--gold-dark); border-radius: 3px; padding: 0 5px; }
+.iDesc { font-size: 0.7rem; font-style: italic; color: var(--ink-dim); line-height: 1.45; }
+.actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
+} /* @layer */

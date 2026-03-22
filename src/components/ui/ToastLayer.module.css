@@ -1,0 +1,23 @@
+.layer {
+  position: fixed; bottom: 24px; right: 24px;
+  z-index: 500;
+  display: flex; flex-direction: column; gap: 6px;
+  pointer-events: none; max-width: 340px;
+}
+.toast {
+  pointer-events: all;
+  background: rgba(10,10,14,0.96);
+  border: 1px solid var(--c);
+  border-left: 3px solid var(--c);
+  color: var(--c);
+  font-family: var(--serif);
+  font-size: 0.78rem;
+  font-style: italic;
+  padding: 8px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  animation: slideIn 0.2s ease forwards;
+}
+@keyframes slideIn { from{opacity:0;transform:translateX(16px);} to{opacity:1;transform:translateX(0);} }

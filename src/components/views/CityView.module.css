@@ -1,0 +1,105 @@
+/* ── Shared View styles ────────────────────────────────────────────────── */
+/* Each view is a "page" of atmospheric text + minimal interactive elements */
+
+.page {
+  max-width: 760px;
+  animation: fadeUp 0.25s ease;
+}
+
+/* Location hero text */
+.locHeader { margin-bottom: 12px; }
+.locName {
+  font-family: var(--display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--ink-bright);
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+.locSub {
+  font-family: var(--display);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-top: 4px;
+}
+.locDanger {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+  margin-top: 6px;
+}
+
+.locDesc {
+  font-size: 0.92rem;
+  font-style: italic;
+  line-height: 1.8;
+  color: var(--ink);
+  padding-left: 16px;
+  border-left: 2px solid var(--border-lit);
+}
+
+/* Sections */
+.section { margin-bottom: 24px; }
+.sectionHead {
+  font-family: var(--display);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 12px;
+}
+
+/* Action list */
+.actionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Training */
+.trainToggle {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--display);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+  padding: 0;
+}
+.trainList { display: flex; flex-direction: column; gap: 12px; }
+.trainCard { border-left: 2px solid var(--gold-dark); padding-left: 14px; }
+.trainHeader { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.trainName { font-family: var(--display); font-size: 0.82rem; color: var(--gold-lit); }
+.trainDesc { font-size: 0.78rem; font-style: italic; color: var(--ink-dim); line-height: 1.5; margin-bottom: 6px; }
+.trainMeta { display: flex; align-items: center; justify-content: space-between; }
+
+/* Travel */
+.travelGroup { margin-bottom: 20px; }
+.travelGroupLabel {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.travelLinks { display: flex; flex-direction: column; gap: 4px; }
+.travelLink {
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--gold-lit);
+  transition: color 0.12s;
+  padding: 3px 0;
+  border-bottom: 1px solid transparent;
+  display: inline-block;
+}
+.travelLink:hover { color: var(--gold-vivid); border-bottom-color: var(--gold-dark); }
+.here { color: var(--ink-bright); cursor: default; font-style: italic; }
+.locked { color: var(--ink-dim); cursor: not-allowed; opacity: 0.5; }
+.hereTag { font-size: 0.7rem; color: var(--gold); font-style: italic; }
+.lockTag { font-size: 0.7rem; color: var(--red-lit); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }

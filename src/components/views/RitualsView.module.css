@@ -1,0 +1,20 @@
+@layer components {
+.page { max-width: 760px; animation: fade-in-up 0.25s var(--ease-out) both; }
+.title { font-family: var(--display); font-size: 1.4rem; color: var(--ink-bright); margin-bottom: 6px; }
+.sub { font-style: italic; color: var(--ink-dim); font-size: 0.88rem; margin-bottom: 0; }
+.list { display: flex; flex-direction: column; gap: 22px; margin-top: 4px; }
+.ritual {
+  border-left: 2px solid var(--veil);
+  padding-left: 16px;
+  transition: border-color 0.2s;
+  &:hover { border-left-color: var(--veil-lit); }
+}
+.ritHead { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.ritName { font-family: var(--display); font-size: 0.9rem; color: var(--ink-bright); }
+.ritDesc { font-style: italic; font-size: 0.83rem; color: var(--ink-dim); line-height: 1.6; margin-bottom: 6px; }
+.ritMeta { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 6px; }
+.outcomes { font-size: 0.74rem; font-style: italic; color: var(--ink-dim); margin-bottom: 8px; line-height: 1.55; }
+.lockedSection { margin-top: 6px; }
+.lockedHead { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 10px; }
+.lockedItem { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+} /* @layer */

@@ -1,0 +1,32 @@
+@layer components {
+.page { max-width: 760px; animation: fade-in-up .25s var(--ease-out) both; }
+.title { font-family: var(--display); font-size: 1.4rem; color: var(--ink-bright); margin-bottom: 6px; }
+.sub { font-style: italic; color: var(--ink-dim); font-size: 0.88rem; }
+.list { display: flex; flex-direction: column; gap: 18px; margin-top: 4px; }
+.faction {
+  border: 1px solid var(--border);
+  border-left: 3px solid color-mix(in oklch, var(--fc, var(--border-lit)) 60%, transparent);
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: border-color 0.2s, background 0.2s;
+  &:hover { background: var(--raised); }
+  &.primary {
+    border-color: color-mix(in oklch, var(--fc, var(--gold)) 50%, var(--border));
+    background: color-mix(in oklch, var(--fc, var(--gold-shadow)) 6%, var(--surface));
+  }
+}
+.fTop { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+.fIcon { font-size: 1.6rem; flex-shrink: 0; line-height: 1; }
+.fMeta { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.fName { font-family: var(--display); font-size: 0.88rem; color: var(--ink-bright); }
+.fStanding { text-align: right; }
+.fVal { font-family: var(--mono); font-size: 1rem; display: block; font-variant-numeric: tabular-nums; }
+.fRank { font-family: var(--display); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.fDesc { font-size: 0.8rem; font-style: italic; color: var(--ink-dim); line-height: 1.6; margin-bottom: 10px; }
+.fBar { height: 5px; background: var(--border); border-radius: 99px; overflow: clip; position: relative; margin-bottom: 10px; }
+.fBarFill { height: 100%; border-radius: 99px; transition: width 0.8s var(--ease-out); opacity: 0.7; }
+.fBarMid { position: absolute; left: 33.3%; top: 0; height: 100%; width: 1px; background: var(--border-glow); }
+.bonuses { display: flex; flex-direction: column; gap: 5px; }
+.bonus { display: flex; align-items: flex-start; gap: 8px; }
+} /* @layer */
