@@ -1,0 +1,127 @@
+export const DARK_SECRETS = [
+  {
+    id: 'acedia',
+    name: 'Acédie',
+    subtitle: 'The Hollow Saint',
+    description:
+      'You were once a vessel for divine purpose, blessed beyond reason. But grace abandoned you, or perhaps you abandoned it. Now you drift through the Illusion, indifferent to the suffering around you — and your own.',
+    startingBonus: { soul: 1, willpower: -1 },
+    startingItem: 'Worn Rosary',
+    startingFaction: 'neutral',
+    specialAbility: 'Grace of the Empty: Once per day, ignore Stability loss from a supernatural horror.',
+    hint: 'Best for players who want a spiritual, introspective build.',
+  },
+  {
+    id: 'brought_back',
+    name: 'Brought Back from the Dead',
+    subtitle: 'The Revenant',
+    description:
+      'You died. Whatever happened beyond the veil — you remember fragments. A terrible cold. The smell of iron. Voices speaking in a language that has no words. Something returned you, and you suspect it was not charity.',
+    startingBonus: { fortitude: 1, coolness: -1 },
+    startingItem: 'Autopsy Scar',
+    startingFaction: 'neutral',
+    specialAbility: 'Death\'s Bargain: When reduced to Mortal wounds, roll Fortitude. On success, survive with Serious wounds instead.',
+    hint: 'Best for tank builds focused on survival.',
+  },
+  {
+    id: 'chosen',
+    name: 'Chosen One',
+    subtitle: 'The Destined',
+    description:
+      'Powers beyond comprehension have taken notice of you. Whether Archons or Death Angels, something has marked you as significant. You draw attention from entities that should not be aware of mortal lives.',
+    startingBonus: { soul: 1, reason: 1 },
+    startingItem: 'Strange Sigil (tattooed)',
+    startingFaction: 'archon_aligned',
+    specialAbility: 'Marked: Gain +1 to all rolls when acting on your destiny, but draw supernatural threats more frequently.',
+    hint: 'High risk, high reward. Good for narrative-focused players.',
+  },
+  {
+    id: 'occultist',
+    name: 'Occultist',
+    subtitle: 'The Seeker',
+    description:
+      'You have spent years studying texts that were never meant to be found, performing rites in condemned buildings, and bleeding for knowledge that slowly unmakes everything you thought was real.',
+    startingBonus: { reason: 1, intuition: 1, stability: -2 },
+    startingItem: 'Grimoire Fragment',
+    startingFaction: 'neutral',
+    specialAbility: 'Forbidden Knowledge: Can perform rituals other characters cannot. Begin with 2 known rituals.',
+    startingInsight: 2,
+    hint: 'High Insight build. Powerful but fragile sanity.',
+  },
+  {
+    id: 'guilty',
+    name: 'Guilty of Crime',
+    subtitle: 'The Condemned',
+    description:
+      'You did something unforgivable. It haunts you not as memory but as presence — the weight of it reshapes reality around you, drawing the attention of entities that feed on guilt and suffering.',
+    startingBonus: { coolness: 1, violence: 1, soul: -1 },
+    startingItem: 'False Identity Papers',
+    startingFaction: 'neutral',
+    specialAbility: 'Blood Debt: When you commit violence, gain 1 AP. The Guilt track grows — at 5 stacks, a supernatural entity appears.',
+    hint: 'Aggressive combat build. Great for crime-focused gameplay.',
+  },
+  {
+    id: 'dimensional',
+    name: 'Dimensional Traveler',
+    subtitle: 'The Wanderer',
+    description:
+      'The walls between worlds have torn around you before. You have walked in Purgatory, glimpsed the Labyrinth, tasted the air of Metropolis. You returned different — partially elsewhere even now.',
+    startingBonus: { perception: 2, willpower: -1 },
+    startingItem: 'Map of Nowhere',
+    startingFaction: 'neutral',
+    specialAbility: 'Planar Senses: Detect entities and rifts others cannot. Can sometimes step sideways into adjacent dimensions.',
+    startingInsight: 3,
+    hint: 'Highest starting Insight. Powerful perceptive abilities.',
+  },
+  {
+    id: 'cult_leader',
+    name: 'Cult Leader',
+    subtitle: 'The Prophet',
+    description:
+      'They followed you — ten, fifty, a hundred souls who believed your words were divine truth. You gave them doctrine. You gave them community. Some of what you told them may even have been real.',
+    startingBonus: { coolness: 2, soul: 1, reason: -1 },
+    startingItem: 'Cult Contact List',
+    startingFaction: 'death_angel_aligned',
+    specialAbility: 'Flock: Begin with 3 Cult Followers who can perform favors. Followers can be sacrificed for significant power.',
+    hint: 'Faction and social-focused build. High roleplay value.',
+  },
+  {
+    id: 'researcher',
+    name: 'Researcher of the Occult',
+    subtitle: 'The Scholar',
+    description:
+      'Your colleagues think you study folklore and mythology. Your filing cabinets tell a different story. Classified documents. Photographs that cannot be explained. Testimonies from people who do not exist anymore.',
+    startingBonus: { reason: 2, perception: 1, violence: -1 },
+    startingItem: 'Research Dossier',
+    startingFaction: 'neutral',
+    specialAbility: 'Academic Insight: Spend AP to research any enemy or location, gaining tactical advantages before engaging.',
+    hint: 'Intelligence build. Excels at investigation and preparation.',
+  },
+  {
+    id: 'death_wish',
+    name: 'Death Wish',
+    subtitle: 'The Reckless',
+    description:
+      'You have stared into the void and found it less frightening than your waking life. You court danger not for thrill but because somewhere inside you, you believe you deserve what darkness offers.',
+    startingBonus: { violence: 2, fortitude: 1, soul: -2 },
+    startingItem: 'Battle-worn Weapon',
+    startingFaction: 'neutral',
+    specialAbility: 'Reckless Abandon: When at Serious wounds or below, gain +2 to all Violence rolls.',
+    hint: 'High risk combat build. Thrives near death.',
+  },
+  {
+    id: 'unknown_past',
+    name: 'Unknown Past',
+    subtitle: 'The Amnesiac',
+    description:
+      'Before a certain point, there is nothing. No childhood. No family. No story. Just the moment you became aware, standing somewhere you did not recognize, already bleeding.',
+    startingBonus: { intuition: 1, perception: 1 },
+    startingItem: 'Unknown Artifact',
+    startingFaction: 'neutral',
+    specialAbility: 'Suppressed Memories: Periodically recover fragments of your past, each granting a new ability or revelation.',
+    startingInsight: 1,
+    hint: 'Versatile build. Past reveals unfold through gameplay.',
+  },
+];
+
+export const getDarkSecret = (id) => DARK_SECRETS.find((d) => d.id === id);

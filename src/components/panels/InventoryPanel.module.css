@@ -1,0 +1,23 @@
+.wrapper { display: flex; flex-direction: column; gap: 14px; }
+.header { display: flex; align-items: center; justify-content: space-between; background: var(--bg-panel); border: 1px solid var(--border-dim); border-left: 3px solid var(--gold-mid); border-radius: var(--radius-md); padding: 12px 16px; }
+.title { font-family: var(--font-display); font-size: 0.95rem; color: var(--gold-bright); }
+.count { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-dim); background: var(--bg-raised); border: 1px solid var(--border-dim); border-radius: 8px; padding: 2px 8px; }
+.empty { background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: var(--radius-md); padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 0.82rem; color: var(--text-dim); font-style: italic; }
+.empty span { font-size: 2rem; }
+.content { display: flex; flex-direction: column; gap: 14px; }
+.group { display: flex; flex-direction: column; gap: 8px; }
+.groupHeader { display: flex; align-items: center; gap: 8px; }
+.groupCount { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); margin-left: auto; }
+.itemGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.itemCard { background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 10px; display: flex; flex-direction: column; gap: 6px; transition: border-color 0.15s; }
+.itemCard:hover { border-color: var(--border-bright); }
+.equipped { border-color: var(--gold-mid); background: rgba(90,74,40,0.15); }
+.itemTop { display: flex; align-items: flex-start; gap: 8px; }
+.itemIcon { font-size: 1.3rem; flex-shrink: 0; }
+.itemInfo { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.itemName { font-family: var(--font-display); font-size: 0.8rem; color: var(--text-bright); }
+.qty { font-family: var(--font-mono); font-size: 0.78rem; color: var(--gold-mid); background: var(--gold-dim); border: 1px solid var(--gold-mid); border-radius: 4px; padding: 0 5px; height: fit-content; }
+.itemDesc { font-size: 0.72rem; color: var(--text-secondary); font-style: italic; line-height: 1.4; }
+.statRow { display: flex; gap: 8px; font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); }
+.effectLabel { font-size: 0.7rem; color: var(--green-vivid); font-style: italic; }
+.itemActions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }

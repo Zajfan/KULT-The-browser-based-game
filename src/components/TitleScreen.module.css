@@ -1,0 +1,197 @@
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  background: #050505;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.06) 2px,
+    rgba(0,0,0,0.06) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bgSigil {
+  position: absolute;
+  font-size: 40vw;
+  color: rgba(139, 26, 26, 0.03);
+  pointer-events: none;
+  z-index: 0;
+  animation: pulse-gold 4s ease-in-out infinite;
+  user-select: none;
+  line-height: 1;
+  transition: color 2s ease;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.85) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 520px;
+  width: 100%;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  justify-content: center;
+}
+
+.eyebrowLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-bright));
+}
+.eyebrow .eyebrowLine:last-child {
+  background: linear-gradient(to left, transparent, var(--border-bright));
+}
+
+.eyebrowText {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  white-space: nowrap;
+}
+
+.titleBlock {
+  position: relative;
+  line-height: 1;
+}
+
+.titleKult {
+  font-family: var(--font-display);
+  font-size: 10rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--red-accent);
+  text-shadow:
+    0 0 40px rgba(180, 40, 40, 0.4),
+    0 0 80px rgba(180, 40, 40, 0.15);
+  user-select: none;
+  animation: flicker 8s ease-in-out infinite;
+}
+
+.glitch .titleKult {
+  -webkit-text-stroke: 1px var(--red-vivid);
+  text-shadow:
+    2px 0 var(--red-vivid),
+    -2px 0 #4a8acb,
+    0 0 40px rgba(220, 60, 60, 0.8);
+}
+
+.titleGlyph {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem;
+  color: var(--red-bright);
+  animation: pulse-red 3s ease-in-out infinite;
+}
+
+.tagline {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+  margin-top: -8px;
+}
+
+.lore {
+  max-width: 400px;
+  background: rgba(13,13,13,0.8);
+  border: 1px solid var(--border-dim);
+  border-left: 2px solid var(--red-bright);
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+}
+
+.lore p {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 260px;
+}
+
+.mainBtn {
+  width: 100%;
+}
+
+.creditBtn {
+  opacity: 0.5;
+  font-size: 8px;
+}
+.creditBtn:hover { opacity: 1; }
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: 8px;
+}
+
+.dot { color: var(--border-bright); }
+
+@keyframes pulse-red {
+  0%, 100% { text-shadow: 0 0 4px rgba(180,40,40,0.3); }
+  50% { text-shadow: 0 0 12px rgba(180,40,40,0.6); }
+}
+@keyframes pulse-gold {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  97% { opacity: 0.85; }
+  98% { opacity: 1; }
+}

@@ -1,0 +1,21 @@
+.wrapper { display: flex; flex-direction: column; gap: 14px; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; background: var(--bg-panel); border: 1px solid var(--border-dim); border-left: 3px solid var(--gold-mid); border-radius: var(--radius-md); padding: 14px 16px; }
+.title { font-family: var(--font-display); font-size: 0.95rem; color: var(--gold-bright); margin-bottom: 4px; }
+.subtitle { font-size: 0.78rem; color: var(--text-secondary); font-style: italic; }
+.balance { text-align: right; }
+.balanceLabel { font-family: var(--font-display); font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); display: block; }
+.balanceVal { font-family: var(--font-mono); font-size: 1.2rem; color: var(--gold-bright); }
+.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.column { display: flex; flex-direction: column; gap: 8px; }
+.columnTitle { font-family: var(--font-display); font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px; }
+.itemCard { background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 10px; display: flex; flex-direction: column; gap: 6px; transition: border-color 0.15s; }
+.itemCard:hover { border-color: var(--border-bright); }
+.cantAfford { opacity: 0.4; }
+.itemTop { display: flex; align-items: flex-start; gap: 8px; }
+.itemIcon { font-size: 1.2rem; flex-shrink: 0; }
+.itemInfo { flex: 1; min-width: 0; }
+.itemName { font-family: var(--font-display); font-size: 0.78rem; color: var(--text-bright); margin-bottom: 2px; }
+.itemPrice { font-family: var(--font-mono); font-size: 0.85rem; color: var(--gold-bright); flex-shrink: 0; }
+.itemDesc { font-size: 0.72rem; color: var(--text-secondary); font-style: italic; line-height: 1.4; }
+.itemStat { font-family: var(--font-mono); font-size: 0.7rem; color: var(--red-vivid); }
+.empty { font-size: 0.78rem; color: var(--text-dim); font-style: italic; padding: 16px; text-align: center; background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); }

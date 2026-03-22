@@ -1,0 +1,26 @@
+.wrapper { display: flex; flex-direction: column; gap: 14px; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; background: var(--bg-panel); border: 1px solid var(--border-dim); border-left: 3px solid var(--red-bright); border-radius: var(--radius-md); padding: 14px 16px; }
+.title { font-family: var(--font-display); font-size: 0.95rem; color: var(--gold-bright); margin-bottom: 4px; }
+.subtitle { font-size: 0.78rem; color: var(--text-secondary); font-style: italic; }
+.nerveDisplay { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 120px; }
+.nerveLabel { font-family: var(--font-display); font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); }
+.nerveBar { width: 120px; height: 6px; background: var(--bg-deep); border-radius: 3px; overflow: hidden; }
+.nerveFill { height: 100%; background: var(--purple-bright); border-radius: 3px; transition: width 0.4s; }
+.nerveVal { font-family: var(--font-mono); font-size: 0.75rem; color: var(--purple-bright); }
+.crimeList { display: flex; flex-direction: column; gap: 10px; }
+.crimeCard { background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: var(--radius-md); padding: 14px; display: flex; flex-direction: column; gap: 8px; transition: border-color 0.15s; }
+.crimeCard:hover { border-color: var(--border-bright); }
+.crimeDisabled { opacity: 0.45; }
+.crimeHeader { display: flex; justify-content: space-between; align-items: center; }
+.crimeInfo { display: flex; align-items: center; gap: 8px; }
+.crimeName { font-family: var(--font-display); font-size: 0.9rem; color: var(--text-bright); }
+.crimeCosts { display: flex; gap: 8px; }
+.cost { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-secondary); }
+.crimeDesc { font-size: 0.78rem; color: var(--text-secondary); font-style: italic; line-height: 1.5; }
+.crimeMeta { display: flex; gap: 12px; flex-wrap: wrap; }
+.crimeAttribute, .crimeRisk, .crimeReward { font-size: 0.72rem; color: var(--text-secondary); }
+.crimeOutcomes { background: var(--bg-deep); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+.outcome { font-size: 0.72rem; color: var(--text-secondary); font-style: italic; }
+.outcome span { font-style: normal; margin-right: 6px; font-family: var(--font-display); font-size: 0.7rem; }
+.commitBtn { align-self: flex-end; }
+.lockedNote { background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 0.78rem; color: var(--text-dim); font-style: italic; text-align: center; }

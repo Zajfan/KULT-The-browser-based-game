@@ -1,0 +1,45 @@
+.wrapper { display: flex; flex-direction: column; gap: 14px; }
+.locationHero { background: var(--bg-panel); border: 1px solid var(--border-dim); border-left: 3px solid var(--red-bright); border-radius: var(--radius-md); padding: 16px; display: flex; gap: 14px; }
+.heroIcon { font-size: 2.5rem; flex-shrink: 0; line-height: 1; }
+.heroInfo { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.heroName { font-family: var(--font-display); font-size: 1rem; color: var(--gold-bright); }
+.heroSub { font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; }
+.heroDesc { font-size: 0.8rem; color: var(--text-secondary); font-style: italic; line-height: 1.6; margin-top: 4px; }
+.heroDanger { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.dangerLabel { font-family: var(--font-display); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); }
+
+.actionsSection { }
+.sectionTitle { font-family: var(--font-display); font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+.actionsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 6px; }
+.actionBtn {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--bg-panel); border: 1px solid var(--border-dim);
+  padding: 10px 12px; border-radius: var(--radius-sm); cursor: pointer;
+  transition: all 0.15s; text-align: left;
+}
+.actionBtn:hover { border-color: var(--gold-mid); background: var(--bg-raised); }
+.actionDisabled { opacity: 0.3; cursor: not-allowed; }
+.actionName { font-family: var(--font-display); font-size: 0.78rem; color: var(--text-primary); }
+.actionCost { font-family: var(--font-mono); font-size: 0.72rem; color: var(--blue-vivid); }
+
+.divider { height: 1px; background: linear-gradient(to right, transparent, var(--border-mid), transparent); }
+
+.travelSection { }
+.locationGroup { margin-bottom: 12px; }
+.groupLabel { font-family: var(--font-display); font-size: 7.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+.locationList { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 4px; }
+
+.locationBtn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg-panel); border: 1px solid var(--border-dim);
+  padding: 7px 10px; border-radius: var(--radius-sm); cursor: pointer;
+  transition: all 0.15s; text-align: left;
+}
+.locationBtn:hover { border-color: var(--border-bright); background: var(--bg-raised); }
+.locationHere { border-color: var(--gold-mid) !important; background: rgba(90,74,40,0.2) !important; cursor: default; }
+.locationLocked { opacity: 0.4; cursor: not-allowed; }
+.locIcon { font-size: 0.9rem; flex-shrink: 0; }
+.locName { font-size: 0.75rem; color: var(--text-primary); flex: 1; }
+.locLock { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); }
+.locHere { font-family: var(--font-display); font-size: 7px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-bright); }
+.locDanger { font-size: 0.6rem; }

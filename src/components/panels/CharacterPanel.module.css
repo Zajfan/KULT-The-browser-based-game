@@ -1,0 +1,44 @@
+.panel { padding: 12px; display: flex; flex-direction: column; gap: 0; }
+.nameBlock { padding: 8px 0 12px; }
+.name { font-family: var(--font-display); font-size: 1rem; color: var(--gold-bright); font-weight: 600; }
+.secret { font-family: var(--font-display); font-size: 0.72rem; color: var(--red-accent); letter-spacing: 0.06em; margin-top: 4px; }
+.secretSub { font-size: 0.7rem; color: var(--text-dim); font-style: italic; }
+.divider { width: 100%; height: 1px; background: linear-gradient(to right, transparent, var(--border-mid), transparent); margin: 8px 0; }
+.section { padding: 4px 0; display: flex; flex-direction: column; gap: 6px; }
+.sectionLabel { font-family: var(--font-display); font-size: 7.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 2px; }
+
+/* Resources */
+.resource { display: flex; flex-direction: column; gap: 4px; }
+.resourceHeader { display: flex; justify-content: space-between; align-items: center; }
+.resourceLabel { font-size: 0.72rem; color: var(--text-secondary); }
+.resourceVal { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); }
+.bar { height: 5px; background: var(--bg-deep); border-radius: 3px; overflow: hidden; }
+.barFill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+
+.insightPips { display: flex; gap: 3px; }
+.pip { width: 14px; height: 5px; background: var(--bg-deep); border: 1px solid var(--border-dim); border-radius: 2px; transition: all 0.2s; }
+.pipFull { background: var(--gold-dim); border-color: var(--gold-bright); box-shadow: 0 0 4px rgba(200,169,110,0.3); }
+
+.woundsBlock { display: flex; justify-content: space-between; align-items: center; background: var(--bg-deep); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 5px 8px; }
+.woundVal { font-family: var(--font-display); font-size: 0.75rem; font-weight: 600; }
+
+/* Attributes */
+.attrGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+.attrItem { background: var(--bg-deep); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 4px 6px; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.attrAbbr { font-family: var(--font-display); font-size: 7px; letter-spacing: 0.1em; color: var(--text-dim); }
+.attrVal { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-secondary); }
+.pos { color: var(--green-vivid) !important; }
+.neg { color: var(--red-vivid) !important; }
+
+/* Equipment */
+.equipped { display: flex; flex-direction: column; gap: 6px; }
+.equippedItem { display: flex; align-items: center; gap: 8px; background: var(--bg-deep); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 6px 8px; }
+.equippedIcon { font-size: 1.1rem; }
+.equippedLabel { font-family: var(--font-display); font-size: 7px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
+.equippedName { font-size: 0.75rem; color: var(--text-primary); }
+.equippedStat { font-family: var(--font-mono); font-size: 0.68rem; color: var(--red-vivid); }
+
+/* Faction */
+.factionBlock { display: flex; align-items: center; gap: 10px; background: var(--bg-deep); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 8px; font-size: 1.4rem; }
+.factionName { font-family: var(--font-display); font-size: 0.72rem; color: var(--text-primary); }
+.factionRank { font-size: 0.68rem; font-style: italic; }

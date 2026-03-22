@@ -1,0 +1,30 @@
+.wrapper { display: flex; flex-direction: column; gap: 14px; }
+.identityCard { background: var(--bg-panel); border: 1px solid var(--border-dim); border-left: 3px solid var(--red-bright); border-radius: var(--radius-md); padding: 16px; display: flex; gap: 14px; align-items: flex-start; }
+.glyph { font-size: 2.5rem; color: var(--red-bright); flex-shrink: 0; animation: pulse-red 3s ease-in-out infinite; }
+.identityInfo { flex: 1; }
+.identityName { font-family: var(--font-display); font-size: 1.1rem; color: var(--gold-bright); margin-bottom: 4px; }
+.identitySecret { font-family: var(--font-display); font-size: 0.75rem; color: var(--red-accent); letter-spacing: 0.05em; margin-bottom: 6px; }
+.identityAbility { font-size: 0.78rem; color: var(--text-secondary); font-style: italic; line-height: 1.5; }
+.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.sectionTitle { font-family: var(--font-display); font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+.statList { display: flex; flex-direction: column; gap: 4px; }
+.statRow { display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); }
+.statLabel { font-size: 0.75rem; color: var(--text-secondary); }
+.statVal { font-family: var(--font-mono); font-size: 0.8rem; color: var(--gold-bright); }
+.progressBlock { display: flex; flex-direction: column; gap: 10px; }
+.progressItem { display: flex; flex-direction: column; gap: 4px; background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 10px; }
+.progressLabel { font-size: 0.75rem; color: var(--text-secondary); }
+.bar { height: 6px; background: var(--bg-deep); border-radius: 3px; overflow: hidden; }
+.barFill { height: 100%; border-radius: 3px; transition: width 0.6s; }
+.progressVal { font-family: var(--font-mono); font-size: 0.72rem; color: var(--purple-bright); }
+.progressNote { font-size: 0.68rem; color: var(--text-dim); font-style: italic; }
+.guiltPips { display: flex; gap: 4px; }
+.pip { width: 24px; height: 8px; background: var(--bg-deep); border: 1px solid var(--border-dim); border-radius: 2px; }
+.pipFull { background: var(--red-mid); border-color: var(--red-bright); box-shadow: 0 0 4px rgba(139,26,26,0.4); }
+.traitList { display: flex; flex-direction: column; gap: 6px; }
+.traitItem { background: var(--bg-panel); border: 1px solid var(--border-dim); border-radius: var(--radius-sm); padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+.traitDesc { font-size: 0.72rem; color: var(--text-secondary); font-style: italic; }
+.none { font-size: 0.75rem; color: var(--text-dim); font-style: italic; }
+.dangerZone { display: flex; justify-content: space-between; align-items: center; background: rgba(61,10,10,0.3); border: 1px solid var(--red-deep); border-radius: var(--radius-sm); padding: 10px 14px; }
+.dangerLabel { font-family: var(--font-display); font-size: 0.75rem; color: var(--red-accent); }
+@keyframes pulse-red { 0%,100% { text-shadow: 0 0 4px rgba(180,40,40,.3); } 50% { text-shadow: 0 0 12px rgba(180,40,40,.6); } }
