@@ -1,0 +1,28 @@
+@layer components {
+.page { max-width: 760px; animation: fade-in-up .25s var(--ease-out) both; }
+.title { font-family: var(--display); font-size: 1.4rem; color: var(--ink-bright); margin-bottom: 6px; }
+.sub { font-style: italic; color: var(--ink-dim); font-size: 0.88rem; }
+.topRow { margin-top: 14px; }
+.search { max-width: 300px; font-size: 0.82rem; }
+.newEntry { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; }
+.newRow { display: grid; grid-template-columns: 140px 1fr; gap: 8px; }
+.typeSelect { background: var(--raised); border: 1px solid var(--border-lit); color: var(--ink-bright); font-family: var(--display); font-size: 0.75rem; padding: 8px 10px; border-radius: var(--radius); outline: none; cursor: pointer; &:focus { border-color: var(--gold-dark); } }
+.titleInput { font-size: 0.88rem; }
+.bodyInput { font-size: 0.82rem; resize: vertical; min-height: 50px; }
+.filterRow { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 14px; }
+.filterBtn { font-family: var(--display); font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-dim); padding: 4px 10px; border: 1px solid var(--border-lit); border-radius: var(--radius); background: none; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 5px;
+  &:hover { color: var(--ink-bright); border-color: var(--border-glow); }
+  &.fOn { color: var(--gold-lit); border-color: var(--gold-dark); background: color-mix(in oklch, var(--gold-shadow) 10%, transparent); }
+}
+.fc { font-family: var(--mono); font-size: 0.6rem; color: var(--ink-dim); background: var(--border); border-radius: 99px; padding: 0 4px; }
+.entries { display: flex; flex-direction: column; gap: 8px; }
+.entry { border: 1px solid var(--border); border-left: 3px solid var(--ec, var(--border-lit)); border-radius: var(--radius); padding: 10px 12px; background: var(--surface); display: flex; flex-direction: column; gap: 5px; transition: border-color .15s; &:hover { border-color: var(--ec, var(--border-glow)); } }
+.entryHead { display: flex; align-items: center; gap: 8px; }
+.entryIcon { font-size: 0.85rem; flex-shrink: 0; color: var(--ec); }
+.entryTitle { font-family: var(--display); font-size: 0.82rem; color: var(--ink-bright); flex: 1; cursor: pointer; &:hover { color: var(--gold-lit); } }
+.entryDay { font-family: var(--mono); font-size: 0.62rem; color: var(--ink-faint); flex-shrink: 0; }
+.deleteBtn { background: none; border: none; cursor: pointer; color: var(--ink-faint); font-size: 0.72rem; padding: 0 2px; flex-shrink: 0; &:hover { color: var(--red-vivid); } }
+.entryBody { font-size: 0.78rem; font-style: italic; color: var(--ink-dim); line-height: 1.55; cursor: pointer; padding-left: 18px; &:hover { color: var(--ink); } }
+.editTitle { font-size: 0.82rem; flex: 1; }
+.editBody { font-size: 0.78rem; resize: vertical; margin-left: 18px; }
+} /* @layer */

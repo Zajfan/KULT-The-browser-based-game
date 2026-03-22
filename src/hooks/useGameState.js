@@ -6,6 +6,9 @@ import { getEnemiesForLocation } from '../data/enemies.js';
 import { FACTIONS } from '../data/factions.js';
 import { LOCATIONS, ACTION_LABELS } from '../data/locations.js';
 import { rollForEvent } from '../data/events.js';
+import { getDAEventForTrigger, shouldTriggerDAEvent } from '../data/deathAngel_events.js';
+import { getDeathAngelForSecret } from '../data/deathAngels.js';
+import { checkQuestProgress } from '../data/quests.js';
 
 const WOUND_LEVELS = ['None','Stabilized','Serious','Critical','Mortal'];
 const AP_REGEN_MS=30000, AP_AMT=5, NERVE_MS=60000, NERVE_AMT=3, TIME_MS=120000;
@@ -91,6 +94,34 @@ export function useGameState() {
     if(evt){setPendingEvent(evt);setCharacter(c=>({...c,recentEventIds:[...(c.recentEventIds||[]).slice(-9),evt.id]}));}
   },[character]);
 
+  const checkDAEvent = useCallback((triggerType) => {
+    if (!character?.darkSecret?.id) return;
+    if (!shouldTriggerDAEvent(character, triggerType)) return;
+    const evt = getDAEventForTrigger(character.darkSecret.id, triggerType);
+    if (evt && !pendingDAEvent && !pendingEvent) {
+      setPendingDAEvent(evt);
+    }
+  }, [character, pendingDAEvent, pendingEvent]);
+
+  const resolveDAEvent = useCallback((outcome, rewards, consequences) => {
+    if (rewards?.insightGain) applyDelta({insight: rewards.insightGain, stats:{insightGained:rewards.insightGain}});
+    if (consequences?.stabilityLoss) applyDelta({stability: -consequences.stabilityLoss, stats:{stabilityLost:consequences.stabilityLoss}});
+    addLog({type:'ritual_complete', text:`[${character?.darkSecret?.name}] Your patron makes itself known.`});
+  }, [applyDelta, addLog, character]);
+
+  // Scenario progress tracking
+  const advanceScenario = useCallback((scenarioId, actIdx, ending = null) => {
+    setCharacter(c => {
+      const qp = {...(c.scenarioProgress || {})};
+      if (ending) {
+        qp[scenarioId] = {...(qp[scenarioId]||{}), completed: true, ending};
+      } else {
+        qp[scenarioId] = {...(qp[scenarioId]||{}), actIdx: actIdx + 1};
+      }
+      return {...c, scenarioProgress: qp};
+    });
+  }, []);
+
   const resolveEvent=useCallback((outcome,rewards,consequences)=>{
     if(rewards.thalers)      applyDelta({thalers:rewards.thalers});
     if(rewards.insightGain)  applyDelta({insight:rewards.insightGain,stats:{insightGained:rewards.insightGain}});
@@ -134,6 +165,12 @@ export function useGameState() {
     if(cs.stabilityLoss)text+=` · Stability −${cs.stabilityLoss}`;
     addLog({type:result.outcome,text});
     if(Math.random()<0.18)maybeFireEvent(character.location);
+    // Death Angel events based on state
+    if (Math.random() < 0.08) {
+      const triggers = ['stability_low','stability_critical','guilt_high','research_deep','insight_milestone'];
+      const t = triggers[Math.floor(Math.random()*triggers.length)];
+      checkDAEvent(t);
+    }
   },[character,applyDelta,addLog,maybeFireEvent]);
 
   const attackEnemy=useCallback(()=>{

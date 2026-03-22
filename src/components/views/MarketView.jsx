@@ -1,4 +1,4 @@
-import { ITEMS, MARKET_STOCK } from '../../data/items.js';
+import { ITEMS, MARKET_STOCK, RARE_MARKET_STOCK } from '../../data/items.js';
 import styles from './MarketView.module.css';
 
 const TYPE_LABELS = { weapon:'Weapon', armor:'Armor', consumable:'Consumable', artifact:'Artifact', key_item:'Key Item' };
@@ -45,7 +45,34 @@ export default function MarketView({ character, onBuy, onSell }) {
         </section>
         <section>
           <h3 className={styles.colHead}>Sell</h3>
-          {sellable.length === 0
+          {character.insight >= 3 && (
+          <div style={{marginBottom:16}}>
+            <h4 style={{fontFamily:'var(--display)',fontSize:'0.7rem',letterSpacing:'.14em',textTransform:'uppercase',color:'var(--veil-vivid)',marginBottom:8}}>
+              ⛧ Restricted — Insight {character.insight}+
+            </h4>
+            <div style={{display:'flex',flexDirection:'column',gap:10}}>
+              {[...Object.values(RARE_MARKET_STOCK).flat()].map(id=>{
+                const item = ITEMS[id]; if(!item) return null;
+                const can = character.thalers >= item.price;
+                return (
+                  <div key={id} className={`${styles.item} ${!can?styles.dim:''}`}>
+                    <div className={styles.itemRow}>
+                      <span className={styles.icon}>{item.icon}</span>
+                      <div className={styles.info}>
+                        <span className={styles.iName}>{item.name}</span>
+                        <span className='badge badge-veil'>Occult</span>
+                      </div>
+                      <span className='mono' style={{color:'var(--veil-vivid)',fontSize:'0.8rem',flexShrink:0}}>₮{item.price}</span>
+                    </div>
+                    <p className={styles.iDesc}>{item.description}</p>
+                    <button className='act act-veil act-sm' onClick={()=>onBuy(id)} disabled={!can}>Acquire</button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      {sellable.length === 0
             ? <p className='italic dim' style={{fontSize:'0.82rem'}}>Nothing sellable in your possession.</p>
             : <div className={styles.itemList}>
                 {sellable.map(item => {

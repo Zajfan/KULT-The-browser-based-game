@@ -17,6 +17,8 @@ export default function App() {
     performTraining,
     useItem, equipItem, buyItem, sellItem,
     updateNPCTrust, resolveEvent,
+    pendingDAEvent, setPendingDAEvent,
+    advanceScenario, resolveDAEvent,
     addLog,
   } = useGameState();
 
@@ -52,6 +54,8 @@ export default function App() {
           useItem, equipItem, buyItem, sellItem,
           updateNPCTrust, resolveEvent,
           setPendingEvent, setCharacter,
+          pendingDAEvent, setPendingDAEvent,
+          advanceScenario, resolveDAEvent,
           addLog,
         }}
       />

@@ -24,8 +24,10 @@ import NPCOverlay       from './overlays/NPCOverlay.jsx';
 import BreakdownOverlay from './overlays/BreakdownOverlay.jsx';
 import DreamOverlay     from './overlays/DreamOverlay.jsx';
 import MortalOverlay    from './overlays/MortalOverlay.jsx';
+import DAEventOverlay   from './overlays/DAEventOverlay.jsx';
 
 import { getNPCForLocation } from '../data/npcs.js';
+import { getDeathAngelForSecret } from '../data/deathAngels.js';
 import { getTimeDescription } from './ui/timeUtils.js';
 import { checkQuestProgress } from '../data/quests.js';
 import { checkScenarioProgress, applyScenarioUpdates } from '../utils/scenarioTracker.js';
@@ -66,7 +68,10 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
     commitCrime, performRitual, performTraining,
     useItem, equipItem, buyItem, sellItem,
     updateNPCTrust, resolveEvent,
-    setPendingEvent, setCharacter, addLog,
+    setPendingEvent, setCharacter,
+    pendingDAEvent, setPendingDAEvent,
+    advanceScenario, resolveDAEvent,
+    addLog,
   } = actions;
 
   // ── Reactive side-effects ───────────────────────────────────────────────
@@ -263,6 +268,15 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
           onClose={() => { updateNPCTrust(currentNPC.id, 5); setNpcOpen(false); }} />
       )}
 
+      {pendingDAEvent && !showBreakdown && !showMortal && !dreamState && !combat && !pendingEvent && (
+        <DAEventOverlay
+          event={pendingDAEvent}
+          deathAngel={getDeathAngelForSecret(character?.darkSecret?.id)}
+          character={character}
+          onResolve={resolveDAEvent}
+          onDismiss={() => setPendingDAEvent(null)}
+        />
+      )}
       <ToastLayer toasts={toasts} onRemove={removeToast} />
     </div>
   );
