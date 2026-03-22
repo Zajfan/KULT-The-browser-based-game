@@ -425,3 +425,48 @@
 }
 
 } /* @layer */
+
+/* ── Passions step ── */
+@layer components {
+.passionsLayout { display: flex; flex-direction: column; gap: 18px; max-width: 680px; }
+.passionType { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.ptHead { display: flex; align-items: baseline; gap: 12px; }
+.ptLabel { font-family: var(--display); font-size: 0.88rem; color: var(--ink-bright); }
+.ptDesc { font-size: 0.78rem; font-style: italic; color: var(--ink-dim); }
+.ptExamples { display: flex; gap: 5px; flex-wrap: wrap; }
+.passionInputs { display: flex; flex-direction: column; gap: 10px; background: var(--surface); border: 1px solid var(--border-lit); border-radius: var(--radius-lg); padding: 16px; }
+.inputLabel { font-family: var(--display); font-size: 0.7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-dim); display: block; margin-bottom: 2px; }
+.passionInputRow { display: flex; align-items: center; gap: 10px; }
+.passionNum { font-family: var(--display); font-size: 1rem; color: var(--gold-dim); flex-shrink: 0; width: 16px; }
+.passionNote { font-size: 0.72rem; font-style: italic; color: var(--ink-dim); line-height: 1.5; padding-top: 4px; border-top: 1px solid var(--border); }
+} /* @layer */
+
+/* Passions step */
+.passionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.passionType {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.passionIcon { font-size: 1.2rem; flex-shrink: 0; }
+.passionLabel { font-family: var(--display); font-size: 0.78rem; color: var(--ink-bright); margin-bottom: 2px; }
+.passionDesc { font-size: 0.7rem; color: var(--ink-dim); font-style: italic; line-height: 1.4; }
+
+.passionInputs { display: flex; flex-direction: column; gap: 10px; max-width: 600px; }
+.passionRow { display: grid; grid-template-columns: 180px 1fr; gap: 10px; align-items: center; }
+.passionSelect {
+  background: var(--raised); border: 1px solid var(--border-lit);
+  color: var(--ink-bright); font-family: var(--display);
+  font-size: 0.75rem; padding: 8px 10px;
+  border-radius: var(--radius); outline: none; cursor: pointer;
+  transition: border-color .2s;
+  &:focus { border-color: var(--veil); }
+}
+.passionInput { font-family: var(--serif) !important; font-size: 0.85rem !important; }
+.passionNote { font-size: 0.75rem; color: var(--ink-dim); font-style: italic; margin-top: 8px; max-width: 500px; }

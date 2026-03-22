@@ -15,6 +15,7 @@ import CharacterView    from './views/CharacterView.jsx';
 import LoreView        from './views/LoreView.jsx';
 import ArchivesView    from './views/ArchivesView.jsx';
 import ScenarioView    from './views/ScenarioView.jsx';
+import OverviewView    from './views/OverviewView.jsx';
 import TransmissionView from './views/TransmissionView.jsx';
 
 import CombatOverlay    from './overlays/CombatOverlay.jsx';
@@ -27,9 +28,13 @@ import MortalOverlay    from './overlays/MortalOverlay.jsx';
 import { getNPCForLocation } from '../data/npcs.js';
 import { getTimeDescription } from './ui/timeUtils.js';
 import { checkQuestProgress } from '../data/quests.js';
+import { checkScenarioProgress, applyScenarioUpdates } from '../utils/scenarioTracker.js';
+import { checkWorldEventTriggers, WORLD_EVENT_TRIGGERS } from '../data/worldEvents.js';
+import { INSIGHT_EVENTS } from '../data/awakening.js';
 import styles from './GameLayout.module.css';
 
 export const VIEWS = [
+  { id:'overview',     label:'Overview',           glyph:'◉' },
   { id:'city',         label:'The City',          glyph:'◈' },
   { id:'crimes',       label:'Criminal Affairs',   glyph:'⚖' },
   { id:'rituals',      label:'Rites & Rituals',    glyph:'⛧' },
@@ -89,8 +94,18 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
       addToast(`Stability at ${stab}. Your grip on the Illusion is failing.`, 'danger');
     if (wounds === 'Critical' && prevWoundsRef.current !== 'Critical')
       addToast('Critical wounds. Find a hospital.', 'danger');
-    if (insight > prevInsightRef.current && insight % 2 === 0)
-      addToast(`Insight ${insight} — the city reveals more of what it truly is.`, 'veil');
+    if (insight > prevInsightRef.current) {
+      if (insight % 2 === 0)
+        addToast(`Insight ${insight} — the city reveals more of what it truly is.`, 'veil');
+      // Milestone events
+      const evt = INSIGHT_EVENTS[insight];
+      if (evt) {
+        setTimeout(() => {
+          addToast(evt.title, 'veil', 6000);
+          addLog({ type: 'system', text: `[Awakening: ${evt.title}] ${evt.text}` });
+        }, 1000);
+      }
+    }
 
     prevStabilityRef.current = stab;
     prevWoundsRef.current    = wounds;
@@ -144,10 +159,31 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
   const handleAction = (actionId) => {
     performAction(actionId);
     trackQuestProgress(actionId, character?.location);
+    trackScenarioProgress(actionId, character?.location);
   };
   const handleCrime = (crime) => {
     commitCrime(crime);
     trackQuestProgress(crime.id, character?.location);
+    trackScenarioProgress(crime.id, character?.location);
+  };
+
+  // ── Scenario progress ──────────────────────────────────────────────────
+  const trackScenarioProgress = (actionId, locationId) => {
+    if (!character) return;
+    const updates = checkScenarioProgress(character, actionId, locationId);
+    if (!updates.length) return;
+
+    setCharacter(c => applyScenarioUpdates(c, updates));
+
+    updates.forEach(u => {
+      if (u.actComplete) {
+        addToast(`${u.scenarioName}: Act ${u.act.num} complete.`, 'veil');
+        addLog({ type: 'complete', text: `[${u.scenarioName}] Act complete — ${u.act.title}. ${u.act.reveals?.substring(0, 80)}...` });
+      }
+      if (u.scenarioComplete) {
+        addToast(`Investigation concluded: ${u.scenarioName}.`, 'veil');
+      }
+    });
   };
 
   // ── Breakdown ──────────────────────────────────────────────────────────

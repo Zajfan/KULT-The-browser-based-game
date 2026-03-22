@@ -1,0 +1,23 @@
+@layer components {
+.overlay { position:fixed;inset:0;background:color-mix(in oklch,black 90%,transparent);z-index:220;display:grid;place-items:center;animation:fade-in .4s ease; }
+.modal { background:var(--surface);border:1px solid var(--veil-lit);border-top:3px solid var(--veil-vivid);border-radius:var(--radius-lg);width:100%;max-width:500px;box-shadow:0 0 60px color-mix(in oklch,var(--veil-lit) 20%,transparent),0 20px 60px black;animation:scale-in .3s var(--spring); }
+.header { display:flex;align-items:center;gap:12px;padding:14px 18px;background:color-mix(in oklch,var(--veil-deep) 40%,transparent);border-bottom:1px solid var(--veil); }
+.daIcon { font-size:2rem;flex-shrink:0; }
+.daName { font-family:var(--display);font-size:0.88rem;color:var(--veil-vivid); }
+.daSub { font-size:0.7rem;font-style:italic;color:var(--ink-dim); }
+.eventTitle { font-family:var(--display);font-size:0.82rem;color:var(--gold-lit);margin-left:auto;text-align:right;flex-shrink:0; }
+.body { padding:18px;display:flex;flex-direction:column;gap:14px; }
+.text { font-size:0.9rem;font-style:italic;color:var(--ink);line-height:1.8;border-left:2px solid var(--veil);padding-left:14px;text-wrap:pretty; }
+.choices { display:flex;flex-direction:column;gap:7px; }
+.choice { text-align:left;padding:11px 14px;background:var(--raised);border:1px solid var(--border-lit);border-radius:var(--radius);cursor:pointer;display:flex;flex-direction:column;gap:5px;transition:border-color .15s,background .15s;
+  &:hover { border-color:var(--veil);background:color-mix(in oklch,var(--veil-deep) 20%,var(--raised)); }
+}
+.choiceLabel { font-family:var(--display);font-size:0.82rem;color:var(--ink-bright); }
+.choiceTags { display:flex;gap:5px; }
+.result { background:var(--raised);border:1px solid var(--veil);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:8px;animation:fade-in-up .3s var(--ease-out); }
+.resultOutcome { font-family:var(--display);font-size:0.8rem;color:var(--veil-vivid);letter-spacing:.08em; }
+.resultText { font-size:0.85rem;font-style:italic;color:var(--ink);line-height:1.7; }
+.aspect { display:flex;gap:8px;align-items:baseline; }
+.aspectLabel { font-family:var(--display);font-size:7px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim); }
+.aspect span { font-size:0.75rem;color:var(--veil-vivid);font-style:italic; }
+} /* @layer */

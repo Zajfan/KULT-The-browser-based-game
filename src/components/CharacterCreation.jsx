@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { DARK_SECRETS } from '../data/darkSecrets.js';
 import { ADVANTAGES, DISADVANTAGES } from '../data/advantages.js';
 import { FACTIONS } from '../data/factions.js';
+import { PASSION_TYPES } from '../data/passions.js';
 import { ITEMS } from '../data/items.js';
 import styles from './CharacterCreation.module.css';
 
@@ -32,13 +33,14 @@ const SECRET_ITEMS = {
 
 const TOTAL_PTS = 5;
 
-const STEP_LABELS = ['Dark Secret','Attributes','Advantages','Faction','Finalize'];
+const STEP_LABELS = ['Dark Secret','Attributes','Advantages','Faction','Passions','Finalize'];
 
 export default function CharacterCreation({ onStart, onBack }) {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({
     name:'', darkSecret:null, attributePoints:{},
     advantages:[], disadvantages:[], faction:'neutral', startingItemId:null,
+    passions:[{typeId:'person',description:''},{typeId:'belief',description:''},{typeId:'place',description:''}],
   });
 
   const spent = Object.values(form.attributePoints).reduce((a,b)=>a+b, 0);
@@ -77,7 +79,7 @@ export default function CharacterCreation({ onStart, onBack }) {
 
   const canNext = () => {
     if (step===0) return !!form.darkSecret;
-    if (step===4) return form.name.trim().length >= 2;
+    if (step===5) return form.name.trim().length >= 2;
     return true;
   };
 
@@ -248,7 +250,62 @@ export default function CharacterCreation({ onStart, onBack }) {
     </>
   );
 
-  const S4 = () => {
+
+  const S4 = () => (
+    <>
+      <div className={styles.stepHead}>
+        <span className={styles.stepEyebrow}>Step 05 — Anchors</span>
+        <h2 className={styles.stepTitle}>Passions</h2>
+        <p className={styles.stepDesc}>
+          The things that keep you human. KULT characters are defined not just by their skills
+          but by what they care about. Each Passion is an anchor — a person, belief, place, or
+          object that matters enough to affect your choices. Up to three. None are required,
+          but absence has its own meaning.
+        </p>
+      </div>
+      <div className={styles.passionsLayout}>
+        {PASSION_TYPES.map(pt => (
+          <div key={pt.id} className={styles.passionType}>
+            <div className={styles.ptHead}>
+              <span className={styles.ptLabel}>{pt.label}</span>
+              <span className={styles.ptDesc}>{pt.desc}</span>
+            </div>
+            <div className={styles.ptExamples}>
+              {pt.examples.map(ex => (
+                <span key={ex} className='badge badge-dim'>{ex}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div className={styles.passionInputs}>
+          <span className={styles.inputLabel}>Your Passions (describe each in your own words)</span>
+          {[0,1,2].map(idx => (
+            <div key={idx} className={styles.passionInputRow}>
+              <span className={styles.passionNum}>{idx + 1}.</span>
+              <input
+                className='field'
+                type='text'
+                placeholder={idx === 0 ? 'Your most important Passion...' : idx === 1 ? 'Optional second Passion...' : 'Optional third Passion...'}
+                value={form.passions[idx] || ''}
+                maxLength={120}
+                onChange={e => {
+                  const newP = [...form.passions];
+                  newP[idx] = e.target.value;
+                  setForm(f => ({...f, passions: newP}));
+                }}
+              />
+            </div>
+          ))}
+          <p className={styles.passionNote}>
+            Passions that are threatened reduce Stability. Passions that are protected or fulfilled restore it.
+            You can add or modify Passions during play.
+          </p>
+        </div>
+      </div>
+    </>
+  );
+
+  const S4_name = () => {
     const s = form.darkSecret;
     const item = form.startingItemId ? ITEMS[form.startingItemId] : null;
     const allAttrs = {};
@@ -256,7 +313,7 @@ export default function CharacterCreation({ onStart, onBack }) {
     return (
       <>
         <div className={styles.stepHead}>
-          <span className={styles.stepEyebrow}>Step 05 — Identity</span>
+          <span className={styles.stepEyebrow}>Step 06 — Identity</span>
           <h2 className={styles.stepTitle}>Name yourself</h2>
           <p className={styles.stepDesc}>The name you carry in the Illusion. Choose carefully.</p>
         </div>
@@ -288,6 +345,16 @@ export default function CharacterCreation({ onStart, onBack }) {
               <p style={{fontSize:'0.78rem',color:'var(--ink)'}}>{form.advantages.map(a=>a.name).join(', ')}</p>
             </div>
           )}
+          {form.passions.filter(Boolean).length > 0 && (
+            <div className={styles.summaryBlock} style={{gridColumn:'1/-1'}}>
+              <span className={styles.summaryLabel}>Passions</span>
+              <div style={{display:'flex',flexDirection:'column',gap:4}}>
+                {form.passions.filter(Boolean).map((p,i) => (
+                  <span key={i} style={{fontSize:'0.78rem',color:'var(--ink)',fontStyle:'italic'}}>{i+1}. {p}</span>
+                ))}
+              </div>
+            </div>
+          )}
           <div className={styles.summaryBlock}>
             <span className={styles.summaryLabel}>Faction / Starting Item</span>
             <p style={{fontSize:'0.78rem',color:'var(--ink)'}}>
@@ -300,7 +367,7 @@ export default function CharacterCreation({ onStart, onBack }) {
     );
   };
 
-  const STEPS = [S0,S1,S2,S3,S4];
+  const STEPS = [S0,S1,S2,S3,S4,S4_name];
   const CurrentStep = STEPS[step];
 
   return (
