@@ -1,105 +1,45 @@
-/* ── Shared View styles ────────────────────────────────────────────────── */
-/* Each view is a "page" of atmospheric text + minimal interactive elements */
-
-.page {
-  max-width: 760px;
-  animation: fadeUp 0.25s ease;
+@layer components {
+.page { max-width: 760px; animation: fade-in-up .25s var(--ease-out) both; }
+.locHeader { margin-bottom: 10px; }
+.locName { font-family: var(--display); font-size: 1.7rem; font-weight: 700; color: var(--ink-bright); line-height: 1.15; text-wrap: balance; }
+.locMeta { display: flex; align-items: center; gap: 14px; margin-top: 5px; }
+.locSub { font-family: var(--display); font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-dim); }
+.locDanger { font-family: var(--mono); font-size: 0.68rem; }
+.locDesc { font-size: 0.9rem; font-style: italic; line-height: 1.8; color: var(--ink); border-left: 2px solid var(--border-lit); padding-left: 16px; text-wrap: pretty; }
+.atmosphere {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 0.8rem; font-style: italic; color: var(--ink-dim);
+  line-height: 1.65; padding-left: 16px;
+  border-left: 2px solid var(--blood);
+  margin-top: 10px;
+  text-wrap: pretty;
+  animation: fade-in .4s ease both;
+  animation-delay: .2s;
+  @starting-style { opacity: 0; }
 }
-
-/* Location hero text */
-.locHeader { margin-bottom: 12px; }
-.locName {
-  font-family: var(--display);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--ink-bright);
-  letter-spacing: 0.04em;
-  line-height: 1.2;
-}
-.locSub {
-  font-family: var(--display);
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  margin-top: 4px;
-}
-.locDanger {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  color: var(--ink-dim);
-  margin-top: 6px;
-}
-
-.locDesc {
-  font-size: 0.92rem;
-  font-style: italic;
-  line-height: 1.8;
-  color: var(--ink);
-  padding-left: 16px;
-  border-left: 2px solid var(--border-lit);
-}
-
-/* Sections */
-.section { margin-bottom: 24px; }
-.sectionHead {
-  font-family: var(--display);
-  font-size: 0.72rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  margin-bottom: 12px;
-}
-
-/* Action list */
-.actionList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-/* Training */
-.trainToggle {
-  background: none; border: none; cursor: pointer;
-  font-family: var(--display);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 10px;
-  padding: 0;
-}
+.atmSep { color: var(--blood); flex-shrink: 0; margin-top: 2px; }
+.sh { font-family: var(--display); font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 12px; }
+.section { margin-bottom: 8px; }
+.actionGrid { display: flex; flex-wrap: wrap; gap: 7px; }
+.toggle { background: none; border: none; cursor: pointer; font-family: var(--display); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); padding: 0; margin-bottom: 12px; transition: color .15s; &:hover { color: var(--gold-vivid); } }
 .trainList { display: flex; flex-direction: column; gap: 12px; }
 .trainCard { border-left: 2px solid var(--gold-dark); padding-left: 14px; }
-.trainHeader { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
-.trainName { font-family: var(--display); font-size: 0.82rem; color: var(--gold-lit); }
-.trainDesc { font-size: 0.78rem; font-style: italic; color: var(--ink-dim); line-height: 1.5; margin-bottom: 6px; }
-.trainMeta { display: flex; align-items: center; justify-content: space-between; }
-
-/* Travel */
-.travelGroup { margin-bottom: 20px; }
-.travelGroupLabel {
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.travelLinks { display: flex; flex-direction: column; gap: 4px; }
-.travelLink {
-  font-size: 0.85rem;
-  cursor: pointer;
-  color: var(--gold-lit);
-  transition: color 0.12s;
-  padding: 3px 0;
-  border-bottom: 1px solid transparent;
-  display: inline-block;
-}
-.travelLink:hover { color: var(--gold-vivid); border-bottom-color: var(--gold-dark); }
+.trainRow { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+.trainName { font-family: var(--display); font-size: 0.8rem; color: var(--gold-lit); }
+.trainDesc { font-size: 0.76rem; font-style: italic; color: var(--ink-dim); line-height: 1.5; margin-bottom: 6px; }
+.trainFoot { display: flex; justify-content: space-between; align-items: center; }
+.threatList { display: flex; flex-direction: column; gap: 10px; }
+.threat { display: flex; gap: 10px; align-items: flex-start; }
+.threatIcon { font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+.threatName { font-family: var(--display); font-size: 0.78rem; color: var(--ink-bright); }
+.threatDesc { font-size: 0.72rem; font-style: italic; color: var(--ink-dim); line-height: 1.45; margin-top: 2px; }
+.travelGroup { margin-bottom: 16px; }
+.groupLabel { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint); margin-bottom: 7px; }
+.travelLinks { display: flex; flex-direction: column; gap: 3px; }
+.tLink { font-size: 0.85rem; cursor: pointer; color: var(--gold-lit); padding: 2px 0; transition: color .12s; display: block; &:hover { color: var(--gold-vivid); } }
 .here { color: var(--ink-bright); cursor: default; font-style: italic; }
-.locked { color: var(--ink-dim); cursor: not-allowed; opacity: 0.5; }
-.hereTag { font-size: 0.7rem; color: var(--gold); font-style: italic; }
-.lockTag { font-size: 0.7rem; color: var(--red-lit); }
-
-@keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+.locked { color: var(--ink-dim); cursor: not-allowed; opacity: 0.45; }
+.hereTag { font-size: 0.7rem; color: var(--gold); }
+.lockTag { font-size: 0.68rem; color: var(--red-lit); }
+.subTag  { font-size: 0.72rem; color: var(--ink-dim); font-style: italic; }
+} /* @layer */

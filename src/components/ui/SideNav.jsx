@@ -1,21 +1,22 @@
 import { formatTime } from './timeUtils.js';
+import AudioToggle from './AudioToggle.jsx';
 import styles from './SideNav.module.css';
 
-const WOUND_COLOR = { None:'var(--vital-lit)', Stabilized:'var(--gold)', Serious:'#b87333', Critical:'var(--red-lit)', Mortal:'var(--red-vivid)' };
+const WC = { None:'var(--vital-lit)', Stabilized:'var(--gold)', Serious:'oklch(62% 0.14 55)', Critical:'var(--red-lit)', Mortal:'var(--red-vivid)' };
 
 export default function SideNav({ views, current, onSelect, character, currentNPC, onOpenNPC, hour }) {
   if (!character) return null;
 
-  const stabPct    = (character.stability / character.maxStability) * 100;
-  const apPct      = (character.ap / character.maxAp) * 100;
-  const nervePct   = (character.nerve / character.maxNerve) * 100;
-  const stabColor  = character.stability > 6 ? 'var(--vital-lit)' : character.stability > 3 ? 'var(--gold)' : 'var(--red-vivid)';
+  const stabPct  = (character.stability / character.maxStability) * 100;
+  const apPct    = (character.ap / character.maxAp) * 100;
+  const nervePct = (character.nerve / character.maxNerve) * 100;
+  const stabC    = character.stability > 6 ? 'var(--vital-lit)' : character.stability > 3 ? 'var(--gold)' : 'var(--red-vivid)';
 
   return (
     <nav className={styles.nav}>
       {/* Identity */}
       <div className={styles.identity}>
-        <div className={styles.sigil}>⛧</div>
+        <span className={styles.sigil}>⛧</span>
         <div className={styles.name}>{character.name}</div>
         <div className={styles.secret}>{character.darkSecret?.name}</div>
       </div>
@@ -25,31 +26,38 @@ export default function SideNav({ views, current, onSelect, character, currentNP
         <div className={styles.vital}>
           <div className={styles.vitalRow}>
             <span className={styles.vLabel}>Stability</span>
-            <span className={styles.vVal} style={{color: stabColor}}>{Math.floor(character.stability)}/{character.maxStability}</span>
+            <span className={styles.vVal} style={{color:stabC}}>{Math.floor(character.stability)}/{character.maxStability}</span>
           </div>
-          <div className='bar-wrap'><div className='bar-fill' style={{width:`${stabPct}%`, background:stabColor}} /></div>
+          <div className='bar-wrap'><div className='bar-fill' style={{width:`${stabPct}%`,background:stabC}} /></div>
         </div>
         <div className={styles.vital}>
           <div className={styles.vitalRow}>
             <span className={styles.vLabel}>Action Points</span>
             <span className={styles.vVal}>{Math.floor(character.ap)}/{character.maxAp}</span>
           </div>
-          <div className='bar-wrap'><div className='bar-fill' style={{width:`${apPct}%`, background:'#4a7fc1'}} /></div>
+          <div className='bar-wrap'><div className='bar-fill' style={{width:`${apPct}%`,background:'oklch(52% 0.16 260)'}} /></div>
         </div>
         <div className={styles.vital}>
           <div className={styles.vitalRow}>
             <span className={styles.vLabel}>Nerve</span>
             <span className={styles.vVal}>{Math.floor(character.nerve)}/{character.maxNerve}</span>
           </div>
-          <div className='bar-wrap'><div className='bar-fill' style={{width:`${nervePct}%`, background:'var(--veil-lit)'}} /></div>
+          <div className='bar-wrap'><div className='bar-fill' style={{width:`${nervePct}%`,background:'var(--veil-lit)'}} /></div>
         </div>
-        <div className={styles.vitalRow} style={{marginTop:4}}>
+        <div className={styles.vitalRow} style={{marginTop:2}}>
           <span className={styles.vLabel}>Wounds</span>
-          <span className={styles.vVal} style={{color: WOUND_COLOR[character.wounds]}}>{character.wounds}</span>
+          <span className={styles.vVal} style={{color:WC[character.wounds]}}>{character.wounds}</span>
         </div>
         <div className={styles.vitalRow}>
           <span className={styles.vLabel}>Insight</span>
-          <span className={styles.vVal} style={{color:'var(--gold-lit)'}}>{character.insight}/10</span>
+          <div className={styles.insightRow}>
+            <div className='pips'>
+              {Array.from({length:Math.min(character.maxInsight,10)},(_,i)=>(
+                <div key={i} className={`pip ${i<character.insight?'on':''}`} />
+              ))}
+            </div>
+            <span className={styles.vVal} style={{color:'var(--gold-lit)'}}>{character.insight}</span>
+          </div>
         </div>
         <div className={styles.vitalRow}>
           <span className={styles.vLabel}>Thalers</span>
@@ -59,14 +67,12 @@ export default function SideNav({ views, current, onSelect, character, currentNP
 
       <div className={styles.divider} />
 
-      {/* Navigation links */}
+      {/* Nav links */}
       <ul className={styles.links}>
         {views.map(v => (
           <li key={v.id}>
-            <button
-              className={`${styles.link} ${current===v.id ? styles.active : ''}`}
-              onClick={() => onSelect(v.id)}
-            >
+            <button className={`${styles.link} ${current===v.id?styles.active:''}`}
+              onClick={()=>onSelect(v.id)}>
               <span className={styles.glyph}>{v.glyph}</span>
               <span className={styles.label}>{v.label}</span>
             </button>
@@ -76,7 +82,7 @@ export default function SideNav({ views, current, onSelect, character, currentNP
 
       <div className={styles.divider} />
 
-      {/* NPC */}
+      {/* NPC contact */}
       {currentNPC && (
         <button className={styles.npcBtn} onClick={onOpenNPC}>
           <span className={styles.npcIcon}>{currentNPC.icon}</span>
@@ -87,10 +93,13 @@ export default function SideNav({ views, current, onSelect, character, currentNP
         </button>
       )}
 
-      {/* Clock */}
-      <div className={styles.clock}>
-        <span className={styles.clockTime}>{formatTime(hour)}</span>
-        <span className={styles.clockDay}>Day {character.gameTime?.day ?? 1}</span>
+      {/* Footer: clock + audio */}
+      <div className={styles.foot}>
+        <div className={styles.clock}>
+          <span className={styles.clockTime}>{formatTime(hour)}</span>
+          <span className={styles.clockDay}>Day {character.gameTime?.day ?? 1}</span>
+        </div>
+        <AudioToggle />
       </div>
     </nav>
   );

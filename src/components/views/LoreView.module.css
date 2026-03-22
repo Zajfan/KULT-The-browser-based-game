@@ -1,0 +1,35 @@
+@layer components {
+.page { max-width: 960px; animation: fade-in-up .25s var(--ease-out) both; }
+.title { font-family: var(--display); font-size: 1.4rem; color: var(--ink-bright); margin-bottom: 6px; }
+.sub { font-style: italic; color: var(--ink-dim); font-size: 0.88rem; }
+.layout { display: grid; grid-template-columns: 220px 1fr; gap: 32px; margin-top: 4px; }
+.index { display: flex; flex-direction: column; gap: 12px; }
+.filterRow { display: flex; flex-wrap: wrap; gap: 5px; }
+.filterBtn {
+  font-family: var(--display); font-size: 7.5px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-dim); padding: 3px 8px;
+  border: 1px solid var(--border-lit); border-radius: var(--radius);
+  background: none; cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+  &:hover { color: var(--ink-bright); border-color: var(--border-glow); }
+  &.filterOn { color: var(--gold-lit); border-color: var(--gold-dark); background: color-mix(in oklch, var(--gold-shadow) 15%, transparent); }
+}
+.entryList { display: flex; flex-direction: column; gap: 3px; }
+.entryBtn {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+  padding: 9px 12px; background: none;
+  border: 1px solid transparent; border-radius: var(--radius);
+  cursor: pointer; text-align: left;
+  transition: background .15s, border-color .15s;
+  &:hover { background: var(--surface); border-color: var(--border); }
+  &.entryOn { background: color-mix(in oklch, var(--gold-shadow) 10%, var(--surface)); border-color: var(--gold-dark); }
+}
+.eTitle { font-family: var(--display); font-size: 0.76rem; color: var(--ink-bright); }
+.entryBody { min-height: 400px; }
+.entry { animation: fade-in-up .2s var(--ease-out) both; }
+.entryHeader { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.entryTitle { font-family: var(--display); font-size: 1.1rem; color: var(--gold-lit); flex: 1; }
+.entryText { display: flex; flex-direction: column; gap: 14px; }
+.entryText p { font-size: 0.88rem; font-style: italic; color: var(--ink); line-height: 1.8; text-wrap: pretty; }
+} /* @layer */

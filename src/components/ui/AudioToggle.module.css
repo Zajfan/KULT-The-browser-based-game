@@ -1,0 +1,22 @@
+@layer components {
+.wrap { position: relative; }
+.btn {
+  font-size: 0.9rem; color: var(--ink-dim);
+  padding: 4px 8px; border: 1px solid var(--border);
+  border-radius: var(--radius); background: none; cursor: pointer;
+  transition: color .15s, border-color .15s;
+  &:hover { color: var(--ink); border-color: var(--border-lit); }
+  &.on { color: var(--gold); border-color: var(--gold-dark); animation: pulse-glow 3s ease-in-out infinite; }
+}
+.volSlider {
+  position: absolute; bottom: 100%; left: 50%;
+  translate: -50% 0; margin-bottom: 8px;
+  background: var(--deep); border: 1px solid var(--border-lit);
+  border-radius: var(--radius); padding: 8px 12px;
+  z-index: 100; white-space: nowrap;
+}
+.range {
+  width: 80px; accent-color: var(--gold);
+  cursor: pointer;
+}
+} /* @layer */

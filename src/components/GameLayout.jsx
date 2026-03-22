@@ -11,7 +11,9 @@ import MarketView    from './views/MarketView.jsx';
 import FactionsView  from './views/FactionsView.jsx';
 import InventoryView from './views/InventoryView.jsx';
 import QuestView     from './views/QuestView.jsx';
-import CharacterView from './views/CharacterView.jsx';
+import CharacterView    from './views/CharacterView.jsx';
+import LoreView        from './views/LoreView.jsx';
+import TransmissionView from './views/TransmissionView.jsx';
 
 import CombatOverlay    from './overlays/CombatOverlay.jsx';
 import EventOverlay     from './overlays/EventOverlay.jsx';
@@ -33,7 +35,9 @@ export const VIEWS = [
   { id:'factions',  label:'Allegiances',       glyph:'◉' },
   { id:'inventory', label:'Possessions',       glyph:'◇' },
   { id:'quests',    label:'Investigations',    glyph:'✦' },
-  { id:'character', label:'Self',              glyph:'∞' },
+  { id:'transmission', label:'The Transmission',glyph:'◫' },
+  { id:'lore',         label:'The Codex',        glyph:'📖' },
+  { id:'character',    label:'Self',              glyph:'∞' },
 ];
 
 export default function GameLayout({ character, combat, pendingEvent, actions }) {

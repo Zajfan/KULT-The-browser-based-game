@@ -211,3 +211,7 @@
 }
 
 } /* @layer */
+
+/* Additions */
+.insightRow { display: flex; align-items: center; gap: 6px; }
+.foot { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px; border-top: 1px solid var(--border); margin-top: auto; }
