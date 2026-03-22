@@ -305,7 +305,7 @@ export default function CharacterCreation({ onStart, onBack }) {
     </>
   );
 
-  const S4_name = () => {
+  const S5 = () => {
     const s = form.darkSecret;
     const item = form.startingItemId ? ITEMS[form.startingItemId] : null;
     const allAttrs = {};
@@ -367,7 +367,7 @@ export default function CharacterCreation({ onStart, onBack }) {
     );
   };
 
-  const STEPS = [S0,S1,S2,S3,S4,S4_name];
+  const STEPS = [S0,S1,S2,S3,S4,S5];
   const CurrentStep = STEPS[step];
 
   return (
