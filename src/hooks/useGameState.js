@@ -10,6 +10,8 @@ import { getDAEventForTrigger, shouldTriggerDAEvent } from '../data/deathAngel_e
 
 const WOUND_LEVELS = ['None','Stabilized','Serious','Critical','Mortal'];
 const AP_REGEN_MS=30000, AP_AMT=5, NERVE_MS=60000, NERVE_AMT=3, TIME_MS=120000;
+const ASCENSION_PER_INSIGHT = 5;
+const MAX_GUILT_STACKS = 10;
 
 export function createNewCharacter(form) {
   const ds=form.darkSecret;
@@ -75,7 +77,7 @@ export function useGameState() {
         n.insight=Math.min(Math.max(0,n.insight+delta.insight),n.maxInsight);
         // Each point of Insight gained advances Ascension
         const gained=n.insight-prev;
-        if(gained>0) n.ascensionProgress=Math.min((n.ascensionProgress||0)+gained*5,100);
+        if(gained>0) n.ascensionProgress=Math.min((n.ascensionProgress||0)+gained*ASCENSION_PER_INSIGHT,100);
       }
       if(delta.factionReward){const{faction,amount}=delta.factionReward;if(faction&&amount)n.factionStandings={...n.factionStandings,[faction]:(n.factionStandings[faction]||0)+amount};}
       if(delta.stats){n.stats={...n.stats};Object.entries(delta.stats).forEach(([k,v])=>{n.stats[k]=(n.stats[k]||0)+v;});}
@@ -220,7 +222,7 @@ export function useGameState() {
     // Guilt accumulates for violent/serious crimes on success or partial success
     if(result.outcome!=='failure'){
       const guiltGain=crime.risk==='everything'?2:crime.risk==='violence'?1:0;
-      if(guiltGain>0){setCharacter(c=>({...c,guiltStacks:Math.min((c.guiltStacks||0)+guiltGain,10)}));text+=` Guilt +${guiltGain}.`;}
+      if(guiltGain>0){setCharacter(c=>({...c,guiltStacks:Math.min((c.guiltStacks||0)+guiltGain,MAX_GUILT_STACKS)}));text+=` Guilt +${guiltGain}.`;}
     }
     addLog({type:`crime_${result.outcome}`,text:`[${crime.name}] ${text}`});
   },[character,applyDelta,addLog]);

@@ -90,29 +90,32 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
     if (day <= prevDayWorldRef.current) return;
     prevDayWorldRef.current = day;
 
-    const active = character.activeWorldEvents || [];
-    const triggered = checkWorldEventTriggers(character, active.map(e => e.id));
-    if (!triggered.length) return;
-
-    const now = character.gameTime;
+    // Use functional update so we always operate on fresh state
+    let triggered = [];
     setCharacter(c => {
+      const active = c.activeWorldEvents || [];
+      triggered = checkWorldEventTriggers(c, active.map(e => e.id));
+      if (!triggered.length) return c;
+
       let n = { ...c };
       const newActive = [...(n.activeWorldEvents || [])];
       triggered.forEach(evt => {
-        // apply immediate effects
         if (evt.effect?.nerve)          n.nerve     = Math.min(Math.max(0, (n.nerve||0) + evt.effect.nerve), n.maxNerve||50);
         if (evt.effect?.insight)        n.insight   = Math.min((n.insight||0) + evt.effect.insight, n.maxInsight||10);
         if (evt.effect?.stabilityLoss)  n.stability = Math.max(0, (n.stability||0) - evt.effect.stabilityLoss);
-        if (evt.duration > 0)           newActive.push({ id: evt.id, expiresDay: now.day + evt.duration });
+        if (evt.duration > 0)           newActive.push({ id: evt.id, expiresDay: day + evt.duration });
       });
-      // expire old world events
       n.activeWorldEvents = newActive.filter(e => e.expiresDay > day);
       return n;
     });
-    triggered.forEach(evt => {
-      addLog({ type: 'system', text: `[World Event: ${evt.title}] ${evt.logText}` });
-      addToast(evt.title, evt.type === 'threat' ? 'danger' : 'veil', 5000);
-    });
+    // Log notifications after state update (triggered captured from updater above)
+    // Use setTimeout to ensure state has updated before logging
+    setTimeout(() => {
+      triggered.forEach(evt => {
+        addLog({ type: 'system', text: `[World Event: ${evt.title}] ${evt.logText}` });
+        addToast(evt.title, evt.type === 'threat' ? 'danger' : 'veil', 5000);
+      });
+    }, 0);
   }, [character?.gameTime?.day]);
 
   // ── Reactive side-effects ───────────────────────────────────────────────
