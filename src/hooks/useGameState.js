@@ -10,6 +10,8 @@ import { getDAEventForTrigger, shouldTriggerDAEvent } from '../data/deathAngel_e
 
 const WOUND_LEVELS = ['None','Stabilized','Serious','Critical','Mortal'];
 const AP_REGEN_MS=30000, AP_AMT=5, NERVE_MS=60000, NERVE_AMT=3, TIME_MS=120000;
+const ASCENSION_PER_INSIGHT = 5;
+const MAX_GUILT_STACKS = 10;
 
 export function createNewCharacter(form) {
   const ds=form.darkSecret;
@@ -70,7 +72,13 @@ export function useGameState() {
       if(delta.ap)      n.ap=Math.min(Math.max(0,n.ap+delta.ap),n.maxAp);
       if(delta.nerve)   n.nerve=Math.min(Math.max(0,n.nerve+delta.nerve),n.maxNerve);
       if(delta.stability) n.stability=Math.min(Math.max(0,n.stability+delta.stability),n.maxStability);
-      if(delta.insight)   n.insight=Math.min(Math.max(0,n.insight+delta.insight),n.maxInsight);
+      if(delta.insight){
+        const prev=n.insight;
+        n.insight=Math.min(Math.max(0,n.insight+delta.insight),n.maxInsight);
+        // Each point of Insight gained advances Ascension
+        const gained=n.insight-prev;
+        if(gained>0) n.ascensionProgress=Math.min((n.ascensionProgress||0)+gained*ASCENSION_PER_INSIGHT,100);
+      }
       if(delta.factionReward){const{faction,amount}=delta.factionReward;if(faction&&amount)n.factionStandings={...n.factionStandings,[faction]:(n.factionStandings[faction]||0)+amount};}
       if(delta.stats){n.stats={...n.stats};Object.entries(delta.stats).forEach(([k,v])=>{n.stats[k]=(n.stats[k]||0)+v;});}
       return n;
@@ -211,6 +219,11 @@ export function useGameState() {
     if(result.outcome==='complete'){text=crime.successText;if(crime.reward?.[1]>0){const a=Math.floor(Math.random()*(crime.reward[1]-crime.reward[0]))+crime.reward[0];applyDelta({thalers:a,stats:{thalersEarned:a}});text+=` +₮${a}.`;}if(crime.rewardInsight){applyDelta({insight:1,stats:{insightGained:1}});text+=' Insight +1.';}if(crime.factionReward)applyDelta({factionReward:crime.factionReward});}
     else if(result.outcome==='partial'){text=crime.partialText;if(crime.reward?.[1]>0){const a=Math.floor(Math.random()*(crime.reward[1]-crime.reward[0])*0.4)+crime.reward[0];if(a>0){applyDelta({thalers:a});text+=` +₮${a}.`;}}}
     else{text=crime.failureText;if(crime.stabilityLoss){applyDelta({stability:-crime.stabilityLoss});text+=` −${crime.stabilityLoss} Stability.`;}if(crime.risk==='arrest'){const f=Math.floor(Math.random()*200)+100;applyDelta({thalers:-f});text+=` Fined ₮${f}.`;}}
+    // Guilt accumulates for violent/serious crimes on success or partial success
+    if(result.outcome!=='failure'){
+      const guiltGain=crime.risk==='everything'?2:crime.risk==='violence'?1:0;
+      if(guiltGain>0){setCharacter(c=>({...c,guiltStacks:Math.min((c.guiltStacks||0)+guiltGain,MAX_GUILT_STACKS)}));text+=` Guilt +${guiltGain}.`;}
+    }
     addLog({type:`crime_${result.outcome}`,text:`[${crime.name}] ${text}`});
   },[character,applyDelta,addLog]);
 
@@ -226,6 +239,15 @@ export function useGameState() {
     else if(result.outcome==='partial'){text=ritual.partialText;sl=Math.ceil(ritual.stabilityRisk/2);}
     else{text=ritual.failureText;sl=ritual.stabilityRisk;}
     if(sl>0){applyDelta({stability:-sl,stats:{stabilityLost:sl}});text+=` −${sl} Stability.`;}
+    // Rituals advance ascension progress
+    if(result.outcome!=='failure'){
+      const ascGain=result.outcome==='complete'?5:2;
+      setCharacter(c=>{
+        const newAsc=Math.min((c.ascensionProgress||0)+ascGain,100);
+        return{...c,ascensionProgress:newAsc};
+      });
+      text+=` Ascension +${ascGain}.`;
+    }
     addLog({type:`ritual_${result.outcome}`,text:`[Ritual: ${ritual.name}] ${text}`});
   },[character,applyDelta,addLog]);
 

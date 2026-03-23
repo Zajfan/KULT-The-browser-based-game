@@ -17,6 +17,7 @@ import ArchivesView    from './views/ArchivesView.jsx';
 import ScenarioView    from './views/ScenarioView.jsx';
 import OverviewView    from './views/OverviewView.jsx';
 import TransmissionView from './views/TransmissionView.jsx';
+import JournalView     from './views/JournalView.jsx';
 
 import CombatOverlay    from './overlays/CombatOverlay.jsx';
 import EventOverlay     from './overlays/EventOverlay.jsx';
@@ -31,7 +32,7 @@ import { getDeathAngelForSecret } from '../data/deathAngels.js';
 import { getTimeDescription } from './ui/timeUtils.js';
 import { checkQuestProgress } from '../data/quests.js';
 import { checkScenarioProgress, applyScenarioUpdates } from '../utils/scenarioTracker.js';
-import { WORLD_EVENT_TRIGGERS } from '../data/worldEvents.js';
+import { checkWorldEventTriggers } from '../data/worldEvents.js';
 import { INSIGHT_EVENTS } from '../data/awakening.js';
 import styles from './GameLayout.module.css';
 
@@ -45,8 +46,10 @@ export const VIEWS = [
   { id:'inventory',    label:'Possessions',        glyph:'◇' },
   { id:'quests',       label:'Investigations',     glyph:'✦' },
   { id:'scenarios',    label:'Major Cases',        glyph:'◆' },
+  { id:'journal',      label:'Field Journal',      glyph:'📝' },
   { id:'transmission', label:'The Transmission',   glyph:'◫' },
   { id:'archives',     label:'The Archives',       glyph:'📜' },
+  { id:'lore',         label:'Lore & Cosmology',   glyph:'◎' },
   { id:'character',    label:'Self',               glyph:'∞' },
 ];
 
@@ -73,6 +76,47 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
     resolveDAEvent,
     addLog,
   } = actions;
+
+  // ── Journal update handler ─────────────────────────────────────────────
+  const updateJournal = (entries) => {
+    setCharacter(c => ({ ...c, journal: entries }));
+  };
+
+  // ── World events: check on day change ──────────────────────────────────
+  const prevDayWorldRef = useRef(character?.gameTime?.day ?? 1);
+  useEffect(() => {
+    if (!character) return;
+    const day = character.gameTime?.day ?? 1;
+    if (day <= prevDayWorldRef.current) return;
+    prevDayWorldRef.current = day;
+
+    // Use functional update so we always operate on fresh state
+    let triggered = [];
+    setCharacter(c => {
+      const active = c.activeWorldEvents || [];
+      triggered = checkWorldEventTriggers(c, active.map(e => e.id));
+      if (!triggered.length) return c;
+
+      let n = { ...c };
+      const newActive = [...(n.activeWorldEvents || [])];
+      triggered.forEach(evt => {
+        if (evt.effect?.nerve)          n.nerve     = Math.min(Math.max(0, (n.nerve||0) + evt.effect.nerve), n.maxNerve||50);
+        if (evt.effect?.insight)        n.insight   = Math.min((n.insight||0) + evt.effect.insight, n.maxInsight||10);
+        if (evt.effect?.stabilityLoss)  n.stability = Math.max(0, (n.stability||0) - evt.effect.stabilityLoss);
+        if (evt.duration > 0)           newActive.push({ id: evt.id, expiresDay: day + evt.duration });
+      });
+      n.activeWorldEvents = newActive.filter(e => e.expiresDay > day);
+      return n;
+    });
+    // Log notifications after state update (triggered captured from updater above)
+    // Use setTimeout to ensure state has updated before logging
+    setTimeout(() => {
+      triggered.forEach(evt => {
+        addLog({ type: 'system', text: `[World Event: ${evt.title}] ${evt.logText}` });
+        addToast(evt.title, evt.type === 'threat' ? 'danger' : 'veil', 5000);
+      });
+    }, 0);
+  }, [character?.gameTime?.day]);
 
   // ── Reactive side-effects ───────────────────────────────────────────────
   useEffect(() => {
@@ -178,7 +222,17 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
     const updates = checkScenarioProgress(character, actionId, locationId);
     if (!updates.length) return;
 
-    setCharacter(c => applyScenarioUpdates(c, updates));
+    setCharacter(c => {
+      let n = applyScenarioUpdates(c, updates);
+      // Award ascension progress for completing scenario acts/scenarios
+      let ascGain = 0;
+      updates.forEach(u => {
+        if (u.actComplete) ascGain += 10;
+        if (u.scenarioComplete) ascGain += 15;
+      });
+      if (ascGain > 0) n = { ...n, ascensionProgress: Math.min((n.ascensionProgress||0) + ascGain, 100) };
+      return n;
+    });
 
     updates.forEach(u => {
       if (u.actComplete) {
@@ -254,6 +308,7 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
             {view==='transmission' && <TransmissionView character={character} />}
             {view==='archives'     && <ArchivesView  character={character} />}
             {view==='lore'         && <LoreView      character={character} />}
+            {view==='journal'      && <JournalView   character={character} onUpdate={updateJournal} />}
           </div>
           <NarrativeFeed log={character?.log} />
         </div>
