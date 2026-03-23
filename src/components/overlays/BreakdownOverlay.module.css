@@ -1,6 +1,6 @@
 @layer components {
-.overlay { position:fixed;inset:0;background:color-mix(in oklch,black 94%,transparent);z-index:300;display:grid;place-items:center;animation:fade-in 0.6s ease; }
-.modal { background:var(--surface);border:1px solid var(--red);border-top:3px solid var(--red-vivid);border-radius:var(--radius-lg);width:100%;max-width:480px;box-shadow:0 0 80px color-mix(in oklch,var(--blood) 30%,transparent),0 20px 60px black;animation:scale-in 0.5s var(--spring); }
+.overlay { position:fixed;inset:0;background:color-mix(in oklch,black 94%,transparent);z-index:300;display:grid;place-items:center;animation:fade-in 0.6s ease;padding:16px; }
+.modal { background:var(--surface);border:1px solid var(--red);border-top:3px solid var(--red-vivid);border-radius:var(--radius-lg);width:100%;max-width:480px;max-height:90dvh;overflow-y:auto;box-shadow:0 0 80px color-mix(in oklch,var(--blood) 30%,transparent),0 20px 60px black;animation:scale-in 0.5s var(--spring); }
 .header { display:flex;gap:14px;align-items:flex-start;padding:16px 18px;background:color-mix(in oklch,var(--blood-deep) 40%,transparent);border-bottom:1px solid var(--blood); }
 .hGlyph { font-size:2rem;color:var(--red-vivid);animation:heartbeat 1.5s ease-in-out infinite;flex-shrink:0; }
 .hTitle { font-family:var(--display);font-size:1rem;color:var(--red-vivid);margin-bottom:4px; }

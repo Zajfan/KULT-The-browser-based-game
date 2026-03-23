@@ -9,6 +9,15 @@
   flex-shrink: 0;
   overflow: hidden;
 }
+.menuBtn {
+  display: none;
+  font-size: 1rem;
+  color: var(--ink-dim);
+  flex-shrink: 0;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+.menuBtn:hover { color: var(--ink-bright); }
 .location {
   font-family: var(--display);
   font-size: 8.5px;
@@ -26,4 +35,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Show hamburger only on mobile */
+@media (max-width: 767px) {
+  .menuBtn { display: flex; }
+  .sep { display: none; }
+  .desc { display: none; }
 }

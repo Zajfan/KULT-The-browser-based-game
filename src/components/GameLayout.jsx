@@ -53,12 +53,22 @@ export const VIEWS = [
   { id:'character',    label:'Self',               glyph:'∞' },
 ];
 
+// Quick-access views shown in the mobile bottom nav bar
+const MOBILE_NAV = [
+  { id:'city',      glyph:'◈', label:'City'      },
+  { id:'crimes',    glyph:'⚖', label:'Crimes'    },
+  { id:'market',    glyph:'☽', label:'Market'    },
+  { id:'inventory', glyph:'◇', label:'Items'     },
+  { id:'character', glyph:'∞', label:'Self'      },
+];
+
 export default function GameLayout({ character, combat, pendingEvent, actions }) {
   const [view,         setView]          = useState('city');
   const [npcOpen,      setNpcOpen]       = useState(false);
   const [showBreakdown,setBreakdown]     = useState(false);
   const [dreamState,   setDream]         = useState(null); // { day }
   const [showMortal,   setMortal]        = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { toasts, addToast, removeToast } = useToasts();
 
   const prevStabilityRef = useRef(character?.stability ?? 10);
@@ -285,14 +295,26 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
   const timeDesc   = getTimeDescription(hour);
   const isDying    = (character?.stability ?? 10) <= 2 || ['Critical','Mortal'].includes(character?.wounds);
 
+  const handleSelectView = (id) => {
+    setView(id);
+    setMobileNavOpen(false);
+  };
+
   return (
     <div className={`${styles.root} ${isDying ? styles.dying : ''}`}>
-      <SideNav views={VIEWS} current={view} onSelect={setView}
+      {/* Mobile nav drawer backdrop */}
+      {mobileNavOpen && (
+        <div className={styles.navOverlay} onClick={() => setMobileNavOpen(false)} />
+      )}
+
+      <SideNav views={VIEWS} current={view} onSelect={handleSelectView}
         character={character} currentNPC={currentNPC}
-        onOpenNPC={() => setNpcOpen(true)} hour={hour} />
+        onOpenNPC={() => setNpcOpen(true)} hour={hour}
+        mobileOpen={mobileNavOpen} onMobileClose={() => setMobileNavOpen(false)} />
 
       <div className={styles.right}>
-        <StatusStrip character={character} timeDesc={timeDesc} />
+        <StatusStrip character={character} timeDesc={timeDesc}
+          onMenuToggle={() => setMobileNavOpen(v => !v)} />
         <div className={styles.content}>
           <div className={styles.viewPane}>
             {view==='city'         && <CityView      character={character} onTravel={travel} onAction={handleAction} onTrain={performTraining} addToast={addToast} />}
@@ -313,6 +335,23 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
           <NarrativeFeed log={character?.log} />
         </div>
       </div>
+
+      {/* Mobile bottom navigation bar */}
+      <nav className={styles.mobileNav}>
+        {MOBILE_NAV.map(v => (
+          <button key={v.id}
+            className={`${styles.mobileNavBtn} ${view === v.id ? styles.mobileActive : ''}`}
+            onClick={() => handleSelectView(v.id)}>
+            <span>{v.glyph}</span>
+            <span className={styles.mobileNavLabel}>{v.label}</span>
+          </button>
+        ))}
+        <button className={`${styles.mobileNavBtn} ${mobileNavOpen ? styles.mobileActive : ''}`}
+          onClick={() => setMobileNavOpen(v => !v)}>
+          <span>☰</span>
+          <span className={styles.mobileNavLabel}>More</span>
+        </button>
+      </nav>
 
       {/* Overlays — priority order matters */}
       {showMortal   && <MortalOverlay    character={character} onSeekHelp={handleSeekHelp} onDie={handleDie} />}

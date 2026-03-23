@@ -4,7 +4,7 @@ import styles from './SideNav.module.css';
 
 const WC = { None:'var(--vital-lit)', Stabilized:'var(--gold)', Serious:'oklch(62% 0.14 55)', Critical:'var(--red-lit)', Mortal:'var(--red-vivid)' };
 
-export default function SideNav({ views, current, onSelect, character, currentNPC, onOpenNPC, hour }) {
+export default function SideNav({ views, current, onSelect, character, currentNPC, onOpenNPC, hour, mobileOpen, onMobileClose }) {
   if (!character) return null;
 
   const stabPct  = (character.stability / character.maxStability) * 100;
@@ -12,8 +12,16 @@ export default function SideNav({ views, current, onSelect, character, currentNP
   const nervePct = (character.nerve / character.maxNerve) * 100;
   const stabC    = character.stability > 6 ? 'var(--vital-lit)' : character.stability > 3 ? 'var(--gold)' : 'var(--red-vivid)';
 
+  const handleSelect = (id) => {
+    onSelect(id);
+    onMobileClose?.();
+  };
+
   return (
-    <nav className={styles.nav}>
+    <nav className={`${styles.nav} ${mobileOpen ? styles.mobileOpen : ''}`}>
+      {/* Mobile close button */}
+      <button className={styles.mobileCloseBtn} onClick={onMobileClose} aria-label="Close menu">✕</button>
+
       {/* Identity */}
       <div className={styles.identity}>
         <span className={styles.sigil}>⛧</span>
@@ -72,7 +80,7 @@ export default function SideNav({ views, current, onSelect, character, currentNP
         {views.map(v => (
           <li key={v.id}>
             <button className={`${styles.link} ${current===v.id?styles.active:''}`}
-              onClick={()=>onSelect(v.id)}>
+              onClick={()=>handleSelect(v.id)}>
               <span className={styles.glyph}>{v.glyph}</span>
               <span className={styles.label}>{v.label}</span>
             </button>
