@@ -5,6 +5,7 @@
   z-index: 400;
   display: grid; place-items: center;
   animation: fade-in 1.2s ease;
+  padding: 24px;
 }
 .modal {
   max-width: 480px; width: 100%;
@@ -72,3 +73,8 @@
   &:hover { color: var(--gold-lit); border-bottom-color: var(--gold-dark); }
 }
 } /* @layer */
+
+@media (max-width: 480px) {
+  .modal { padding: 40px 24px; gap: 24px; }
+  .dreamText { font-size: 0.95rem; }
+}
