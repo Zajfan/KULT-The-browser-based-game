@@ -7,6 +7,7 @@ import { FACTIONS } from '../data/factions.js';
 import { LOCATIONS, ACTION_LABELS } from '../data/locations.js';
 import { rollForEvent } from '../data/events.js';
 import { getDAEventForTrigger, shouldTriggerDAEvent } from '../data/deathAngel_events.js';
+import { RECIPES } from '../data/crafting.js';
 
 const WOUND_LEVELS = ['None','Stabilized','Serious','Critical','Mortal'];
 const AP_REGEN_MS=30000, AP_AMT=5, NERVE_MS=60000, NERVE_AMT=3, TIME_MS=120000;
@@ -36,7 +37,7 @@ export function createNewCharacter(form) {
         log:[{id:Date.now(),type:'system',timestamp:new Date().toLocaleTimeString(),
       text:`You wake into the Illusion as ${form.name}. Dark secret: ${ds?.name||'Unknown'}. Something is different today.`}],
     stats:{actionsPerformed:0,crimesCommitted:0,entitiesDefeated:0,ritualsPerformed:0,stabilityLost:0,insightGained:0,thalersEarned:0,daysPlayed:1},
-    gameTime:{day:1,hour:8}, ascensionProgress:0, guiltStacks:0, activeEffects:[], createdAt:Date.now(),
+    gameTime:{day:1,hour:8}, ascensionProgress:0, guiltStacks:0, heat:0, maxHeat:100, activeEffects:[], createdAt:Date.now(),
   };
 }
 
@@ -53,7 +54,7 @@ export function useGameState() {
     if(!character||screen!=='game') return;
     T.current.ap=setInterval(()=>setCharacter(c=>(!c||c.ap>=c.maxAp)?c:{...c,ap:Math.min(c.ap+AP_AMT,c.maxAp)}),AP_REGEN_MS);
     T.current.nerve=setInterval(()=>setCharacter(c=>(!c||c.nerve>=c.maxNerve)?c:{...c,nerve:Math.min(c.nerve+NERVE_AMT,c.maxNerve)}),NERVE_MS);
-    T.current.time=setInterval(()=>setCharacter(c=>{if(!c)return c;const h=(c.gameTime.hour+1)%24;const d=h===0?c.gameTime.day+1:c.gameTime.day;return{...c,gameTime:{hour:h,day:d}};}),TIME_MS);
+    T.current.time=setInterval(()=>setCharacter(c=>{if(!c)return c;const h=(c.gameTime.hour+1)%24;const d=h===0?c.gameTime.day+1:c.gameTime.day;const newHeat=Math.max(0,(c.heat||0)-1);return{...c,gameTime:{hour:h,day:d},heat:newHeat};}),TIME_MS);
     return()=>Object.values(T.current).forEach(clearInterval);
   },[screen,character?.name]);
 
@@ -185,9 +186,13 @@ export function useGameState() {
     const result=rollCheck(character.attributes.violence);
     const wb=character.equippedWeapon?(getItem(character.equippedWeapon)?.bonus||0):0;
     let pd=0,ed=0,log='';
+    // Apply enemy debuff from terrify
+    const debuffBonus=combat.debuffRounds>0?-3:0;
     if(result.outcome==='complete'){pd=rollDamage(2,6,wb);log=`Strike for ${pd}.`;}
-    else if(result.outcome==='partial'){pd=rollDamage(1,6,wb);ed=rollDamage(1,4,combat.enemy.bonus||0);log=`Exchange — deal ${pd}, take ${ed}.`;}
-    else{ed=rollDamage(1,6,combat.enemy.bonus||0);log=`Missed. Hit for ${ed}.`;}
+    else if(result.outcome==='partial'){pd=rollDamage(1,6,wb);ed=rollDamage(1,4,Math.max(0,(combat.enemy.bonus||0)+debuffBonus));log=`Exchange — deal ${pd}, take ${ed}.`;}
+    else{ed=rollDamage(1,6,Math.max(0,(combat.enemy.bonus||0)+debuffBonus));log=`Missed. Hit for ${ed}.`;}
+    // Negate damage if phase_shift/negate_damage was active
+    if(combat.negateNext){ed=0;log+=' (Damage negated.)';}
     if(ed>0)setCharacter(c=>{const i=WOUND_LEVELS.indexOf(c.wounds);return{...c,wounds:ed>=10?WOUND_LEVELS[Math.min(i+2,4)]:ed>=5?WOUND_LEVELS[Math.min(i+1,4)]:c.wounds};});
     if(combat.enemy.stabilityThreat){const sr=rollCheck(character.attributes.willpower);const loss=sr.outcome==='failure'?(combat.enemy.stabilityThreat.maxLoss||1):0;if(loss>0){applyDelta({stability:-loss,stats:{stabilityLost:loss}});log+=` Horror −${loss} Stability.`;}}
     const newHp=combat.enemy.currentHp-pd;
@@ -198,7 +203,7 @@ export function useGameState() {
       addLog({type:'combat_win',text:`⚔ ${log} — ${combat.enemy.name} defeated.${loot}`});
       setCombat(null);
     } else {
-      setCombat(p=>({...p,round:p.round+1,enemy:{...p.enemy,currentHp:newHp},log:[...p.log,{round:p.round,text:log,roll:result.total}]}));
+      setCombat(p=>({...p,round:p.round+1,darkAbilityCooldown:Math.max(0,(p.darkAbilityCooldown||0)-1),negateNext:false,debuffRounds:Math.max(0,(p.debuffRounds||0)-1),enemy:{...p.enemy,currentHp:newHp},log:[...p.log,{round:p.round,text:log,roll:result.total}]}));
     }
   },[combat,character,applyDelta,addLog]);
 
@@ -206,7 +211,7 @@ export function useGameState() {
     if(!combat)return;
     const result=rollCheck(character.attributes.reflexes);
     if(result.outcome!=='failure'){addLog({type:'flee',text:`Escaped from ${combat.enemy.name}.`});setCombat(null);}
-    else{const d=rollDamage(1,6,combat.enemy.bonus||0);setCharacter(c=>{const i=WOUND_LEVELS.indexOf(c.wounds);return{...c,wounds:d>=5?WOUND_LEVELS[Math.min(i+1,4)]:c.wounds};});addLog({type:'flee_fail',text:`Escape failed — hit for ${d}.`});}
+    else{const d=rollDamage(1,6,combat.enemy.bonus||0);setCharacter(c=>{const i=WOUND_LEVELS.indexOf(c.wounds);return{...c,wounds:d>=5?WOUND_LEVELS[Math.min(i+1,4)]:c.wounds};});addLog({type:'flee_fail',text:`Escape failed — hit for ${d}.`});setCombat(p=>p?{...p,darkAbilityCooldown:Math.max(0,(p.darkAbilityCooldown||0)-1),negateNext:false,debuffRounds:Math.max(0,(p.debuffRounds||0)-1)}:p);}
   },[combat,character,addLog]);
 
   const commitCrime=useCallback((crime)=>{
@@ -223,6 +228,12 @@ export function useGameState() {
     if(result.outcome!=='failure'){
       const guiltGain=crime.risk==='everything'?2:crime.risk==='violence'?1:0;
       if(guiltGain>0){setCharacter(c=>({...c,guiltStacks:Math.min((c.guiltStacks||0)+guiltGain,MAX_GUILT_STACKS)}));text+=` Guilt +${guiltGain}.`;}
+    }
+    // Heat increases based on crime outcome
+    const heatGain=crime.heatGain?.[result.outcome]??0;
+    if(heatGain>0){
+      setCharacter(c=>{const newHeat=Math.min((c.heat||0)+heatGain,c.maxHeat||100);return{...c,heat:newHeat};});
+      text+=` Heat +${heatGain}.`;
     }
     addLog({type:`crime_${result.outcome}`,text:`[${crime.name}] ${text}`});
   },[character,applyDelta,addLog]);
@@ -281,9 +292,9 @@ export function useGameState() {
     let text='';
     setCharacter(c=>{
       let n={...c};
-      if(item.effect==='heal_wound'){const i=WOUND_LEVELS.indexOf(c.wounds);if(i>0){n.wounds=WOUND_LEVELS[i-1];text=`${item.name}: wound improved.`;}else{text='No wounds.';return c;}}
+      if(item.effect==='heal_wound'){const levels=item.value||1;const i=WOUND_LEVELS.indexOf(c.wounds);if(i>0){n.wounds=WOUND_LEVELS[Math.max(0,i-levels)];text=`${item.name}: wound improved.`;}else{text='No wounds.';return c;}}
       else if(['heal_stability','restore_stability'].includes(item.effect)){n.stability=Math.min(c.stability+(item.value||1),c.maxStability);text=`${item.name}: Stability +${item.value||1}.`;if(item.id==='black_lotus'){n.stability=Math.max(0,n.stability-1);text+=' −1 from lotus.';}}
-      else if(item.effect==='gain_insight'){n.insight=Math.min(c.insight+1,c.maxInsight);n.stability=Math.max(0,c.stability-1);text=`${item.name}: Insight +1, Stability −1.`;}
+      else if(item.effect==='gain_insight'){n.insight=Math.min(c.insight+(item.value||1),c.maxInsight);if(!item.skipStabilityLoss){n.stability=Math.max(0,c.stability-1);text=`${item.name}: Insight +${item.value||1}, Stability −1.`;}else{text=`${item.name}: Insight +${item.value||1}.`;}}
       else if(item.effect==='restore_ap'){n.ap=Math.min(c.ap+(item.value||30),c.maxAp);text=`${item.name}: AP +${item.value||30}.`;}
       const inv=[...c.inventory];const idx=inv.findIndex(i=>i.id===itemId);
       if(idx!==-1){inv[idx]={...inv[idx],qty:inv[idx].qty-1};if(inv[idx].qty<=0)inv.splice(idx,1);}
@@ -293,9 +304,136 @@ export function useGameState() {
   },[character,addLog]);
 
   const equipItem=useCallback((itemId)=>{const item=getItem(itemId);if(!item)return;if(item.type==='weapon'){setCharacter(c=>({...c,equippedWeapon:itemId}));addLog({type:'equip',text:`Equipped ${item.name}.`});}else if(item.type==='armor'){setCharacter(c=>({...c,equippedArmor:itemId}));addLog({type:'equip',text:`Equipped ${item.name}.`});}},[addLog]);
-  const buyItem=useCallback((itemId)=>{const item=getItem(itemId);if(!item||!character)return;if(character.thalers<item.price){addLog({type:'error',text:`Need ₮${item.price}.`});return;}applyDelta({thalers:-item.price});setCharacter(c=>({...c,inventory:[...c.inventory,{...item,qty:1}]}));addLog({type:'buy',text:`Bought ${item.name} for ₮${item.price}.`});},[character,applyDelta,addLog]);
+  const buyItem=useCallback((itemId)=>{
+    const item=getItem(itemId);if(!item||!character)return;
+    if(character.thalers<item.price){addLog({type:'error',text:`Need ₮${item.price}.`});return;}
+    applyDelta({thalers:-item.price});
+    setCharacter(c=>{
+      const inv=[...c.inventory];
+      const existing=inv.findIndex(i=>i.id===itemId);
+      if(existing!==-1){inv[existing]={...inv[existing],qty:(inv[existing].qty||1)+1};}
+      else{inv.push({...item,qty:1});}
+      return{...c,inventory:inv};
+    });
+    addLog({type:'buy',text:`Bought ${item.name} for ₮${item.price}.`});
+  },[character,applyDelta,addLog]);
   const sellItem=useCallback((itemId)=>{const item=getItem(itemId);if(!item||!character)return;const sp=Math.floor(item.price*0.6);applyDelta({thalers:sp});setCharacter(c=>{const inv=[...c.inventory];const i=inv.findIndex(x=>x.id===itemId);if(i!==-1){inv[i]={...inv[i],qty:inv[i].qty-1};if(inv[i].qty<=0)inv.splice(i,1);}return{...c,inventory:inv};});addLog({type:'sell',text:`Sold ${item.name} for ₮${sp}.`});},[character,applyDelta,addLog]);
   const updateNPCTrust=useCallback((npcId,delta)=>{setCharacter(c=>({...c,npcTrust:{...(c.npcTrust||{}),[npcId]:Math.min(100,Math.max(0,(c.npcTrust?.[npcId]||0)+delta))}}));},[]);
+
+  // ── Special dark secret combat ability ─────────────────────────────────
+  const useDarkAbility=useCallback(()=>{
+    if(!combat||!character)return;
+    const ability=character.darkSecret?.combatAbility;
+    if(!ability){addLog({type:'error',text:'No special ability.'});return;}
+    const cd=combat.darkAbilityCooldown||0;
+    if(cd>0){addLog({type:'error',text:`Ability on cooldown (${cd} rounds remaining).`});return;}
+    const result=rollCheck(character.attributes[ability.attribute]||0);
+    const wb=character.equippedWeapon?(getItem(character.equippedWeapon)?.bonus||0):0;
+    let abilityText='';
+    let pd=0,ed=0;
+    if(result.outcome!=='failure'){
+      const flavor=ability.flavorSuccess;
+      switch(ability.effect){
+        case 'negate_damage':
+          abilityText=`${ability.name}: ${flavor} (Incoming damage negated this round.)`;
+          setCombat(p=>({...p,round:p.round+1,darkAbilityCooldown:ability.cooldown,negateNext:true,log:[...p.log,{round:p.round,text:abilityText,roll:result.total}]}));
+          addLog({type:'complete',text:`[Special] ${abilityText}`});
+          return;
+        case 'death_heal':{
+          const wIdx=WOUND_LEVELS.indexOf(character.wounds);
+          if(wIdx>0)setCharacter(c=>({...c,wounds:WOUND_LEVELS[wIdx-1]}));
+          pd=rollDamage(1,4,wb)+4;
+          abilityText=`${ability.name}: ${flavor} Wound improved, deal ${pd} bonus damage.`;
+          break;}
+        case 'double_damage':
+          pd=rollDamage(2,6,wb)*2;
+          abilityText=`${ability.name}: ${flavor} Deal ${pd} damage.`;
+          break;
+        case 'soul_strike':
+          pd=rollDamage(1,6,wb)+6;
+          abilityText=`${ability.name}: ${flavor} Deal ${pd} damage. Entity destabilized.`;
+          break;
+        case 'berserk':
+          pd=rollDamage(3,6,wb);
+          ed=rollDamage(1,6);
+          abilityText=`${ability.name}: ${flavor} Deal ${pd}, take ${ed} (self-inflicted).`;
+          if(ed>0){const wi=WOUND_LEVELS.indexOf(character.wounds);setCharacter(c=>({...c,wounds:ed>=5?WOUND_LEVELS[Math.min(wi+1,4)]:c.wounds}));}
+          break;
+        case 'phase_shift':
+          abilityText=`${ability.name}: ${flavor} (All attacks bypass you this round.)`;
+          setCombat(p=>({...p,round:p.round+1,darkAbilityCooldown:ability.cooldown,negateNext:true,log:[...p.log,{round:p.round,text:abilityText,roll:result.total}]}));
+          addLog({type:'complete',text:`[Special] ${abilityText}`});
+          return;
+        case 'terrify':
+          abilityText=`${ability.name}: ${flavor} Enemy attack bonus reduced for 2 rounds.`;
+          setCombat(p=>({...p,round:p.round+1,darkAbilityCooldown:ability.cooldown,debuffRounds:2,log:[...p.log,{round:p.round,text:abilityText,roll:result.total}]}));
+          addLog({type:'complete',text:`[Special] ${abilityText}`});
+          return;
+        case 'tactical':
+          pd=8;
+          abilityText=`${ability.name}: ${flavor} Deal ${pd} guaranteed damage.`;
+          break;
+        case 'wild_card':{
+          const effects=['double_damage','negate_damage','soul_strike','death_heal'];
+          const e=effects[Math.floor(Math.random()*effects.length)];
+          if(e==='negate_damage'){setCombat(p=>({...p,round:p.round+1,darkAbilityCooldown:ability.cooldown,negateNext:true,log:[...p.log,{round:p.round,text:`${ability.name}: ${flavor} (Random: damage negated.)`,roll:result.total}]}));addLog({type:'complete',text:`[Special] ${ability.name}: Random — damage negated.`});return;}
+          pd=e==='double_damage'?rollDamage(2,6,wb)*2:e==='soul_strike'?rollDamage(1,6,wb)+6:rollDamage(1,4,wb)+4;
+          abilityText=`${ability.name}: ${flavor} Deal ${pd} (random effect).`;
+          break;}
+        default:
+          pd=rollDamage(1,6,wb)+3;
+          abilityText=`${ability.name}: ${flavor} Deal ${pd}.`;
+      }
+    } else {
+      abilityText=`${ability.name}: ${ability.flavorFail}`;
+    }
+    if(pd>0){
+      const newHp=combat.enemy.currentHp-pd;
+      if(newHp<=0){
+        let loot='';
+        combat.enemy.loot?.forEach(l=>{if(Math.random()<l.chance){if(l.thalers){const a=Math.floor(Math.random()*(l.thalers[1]-l.thalers[0]))+l.thalers[0];if(a>0){applyDelta({thalers:a,stats:{thalersEarned:a}});loot+=` +₮${a}.`;}}if(l.item){const item=ITEMS[l.item];if(item){setCharacter(c=>({...c,inventory:[...c.inventory,{...item,qty:1}]}));loot+=` Found ${item.name}. `;}}}});
+        applyDelta({stats:{entitiesDefeated:1}});
+        addLog({type:'combat_win',text:`⚔ [Special] ${abilityText} — ${combat.enemy.name} defeated.${loot}`});
+        setCombat(null);
+      } else {
+        setCombat(p=>({...p,round:p.round+1,darkAbilityCooldown:ability.cooldown,enemy:{...p.enemy,currentHp:newHp},log:[...p.log,{round:p.round,text:abilityText,roll:result.total}]}));
+        addLog({type:'complete',text:`[Special] ${abilityText}`});
+      }
+    } else {
+      setCombat(p=>({...p,round:p.round+1,darkAbilityCooldown:Math.max(0,ability.cooldown-1),log:[...p.log,{round:p.round,text:abilityText,roll:result.total}]}));
+      addLog({type:'failure',text:`[Special] ${abilityText}`});
+    }
+  },[combat,character,applyDelta,addLog]);
+
+  // ── Crafting ────────────────────────────────────────────────────────────
+  const craftItem=useCallback((recipeId)=>{
+    if(!character)return;
+    const recipe=RECIPES.find(r=>r.id===recipeId);
+    if(!recipe){addLog({type:'error',text:'Unknown recipe.'});return;}
+    if((character.insight||0)<recipe.insightRequired){addLog({type:'error',text:`Need Insight ${recipe.insightRequired}.`});return;}
+    if((character.ap||0)<recipe.apCost){addLog({type:'error',text:`Need ${recipe.apCost} AP.`});return;}
+    // Check for ingredients (respect qty)
+    const needed={};
+    recipe.ingredients.forEach(id=>{needed[id]=(needed[id]||0)+1;});
+    for(const[id,count] of Object.entries(needed)){
+      const inv=character.inventory.find(i=>i.id===id);
+      if(!inv||(inv.qty||1)<count){addLog({type:'error',text:`Missing ingredient: ${ITEMS[id]?.name||id}.`});return;}
+    }
+    applyDelta({ap:-recipe.apCost});
+    setCharacter(c=>{
+      let inv=[...c.inventory];
+      // Consume ingredients
+      Object.entries(needed).forEach(([id,count])=>{
+        const idx=inv.findIndex(i=>i.id===id);
+        if(idx!==-1){inv[idx]={...inv[idx],qty:inv[idx].qty-count};if(inv[idx].qty<=0)inv.splice(idx,1);}
+      });
+      // Add result
+      const result=ITEMS[recipe.resultId];
+      if(result){const existIdx=inv.findIndex(i=>i.id===recipe.resultId);if(existIdx!==-1){inv[existIdx]={...inv[existIdx],qty:(inv[existIdx].qty||1)+1};}else{inv.push({...result,qty:1});}}
+      return{...c,inventory:inv};
+    });
+    addLog({type:'complete',text:`[Crafting] ${recipe.name} created.`});
+  },[character,applyDelta,addLog]);
 
   return {
     screen,setScreen,character,setCharacter,combat,setCombat,
@@ -306,6 +444,7 @@ export function useGameState() {
     attackEnemy,fleeCombat,commitCrime,performRitual,performTraining,
     useItem,equipItem,buyItem,sellItem,updateNPCTrust,resolveEvent,
     advanceScenario,resolveDAEvent,checkDAEvent,
+    useDarkAbility, craftItem,
     addLog,
   };
 }

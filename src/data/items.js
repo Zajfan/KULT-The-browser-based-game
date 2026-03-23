@@ -57,6 +57,14 @@ export const ITEMS = {
   safe_house_key:  { id:"safe_house_key",  name:"Safe House Key",          type:"key_item", effect:"safe_rest",      value:2, price:500, icon:"🗝", description:"Access to an Awakened Circle safe house. Rest there to recover 2 extra Stability." },
   encrypted_drive: { id:"encrypted_drive", name:"Encrypted Drive",         type:"key_item", effect:"leverage",       value:1, price:0,  icon:"💾", description:"Contains compromising information about someone important. Handle carefully." },
   blood_compact:   { id:"blood_compact",   name:"Blood Compact",           type:"key_item", effect:"entity_deal",    value:1, price:0,  icon:"📜", description:"A binding agreement made with an entity, written in your blood. The terms are specific.", supernatural:true },
+
+  // ── Crafted Items (cannot be bought, only made) ────────────────────────
+  trauma_kit:      { id:"trauma_kit",      name:"Trauma Kit",              type:"consumable", effect:"heal_wound",     value:2, price:0,   icon:"🩹", description:"A field-improvised trauma kit. Heals two wound levels.", crafted:true },
+  veil_tonic:      { id:"veil_tonic",      name:"Veil Tonic",              type:"consumable", effect:"heal_stability", value:5, price:0,   icon:"🍵", description:"A blend of nerve tonic and purified pale salt. Restores 5 Stability.", crafted:true },
+  occult_charge:   { id:"occult_charge",   name:"Occult Charge",           type:"consumable", effect:"restore_ap",     value:60, price:0,  icon:"⚡", description:"Adrenaline laced with a trace of black lotus. Restores 60 AP at the cost of 1 Insight.", crafted:true },
+  warded_coat:     { id:"warded_coat",     name:"Warded Coat",             type:"armor", defense:2, magicDefense:2, price:0, icon:"🧥", description:"A reinforced coat with warding sigils sewn inside. Offers both physical and supernatural protection.", crafted:true, supernatural:true },
+  sight_draught:   { id:"sight_draught",   name:"Sight Draught",           type:"consumable", effect:"gain_insight",   value:1, price:0,   icon:"💧", skipStabilityLoss:true, description:"Laudanum infused with veil glass dust. Grants 1 Insight without Stability cost.", crafted:true, supernatural:true },
+  void_blade_plus: { id:"void_blade_plus", name:"Consecrated Void Blade",  type:"weapon", damage:"3d6+2", bonus:3, price:0, icon:"🗡", description:"A void-touched blade consecrated with an archon shard fragment. The most dangerous weapon you can carry.", crafted:true, supernatural:true },
 };
 
 export const MARKET_STOCK = {

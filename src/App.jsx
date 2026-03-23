@@ -19,6 +19,7 @@ export default function App() {
     updateNPCTrust, resolveEvent,
     pendingDAEvent, setPendingDAEvent,
     advanceScenario, resolveDAEvent,
+    useDarkAbility, craftItem,
     addLog,
   } = useGameState();
 
@@ -56,6 +57,7 @@ export default function App() {
           setPendingEvent, setCharacter,
           pendingDAEvent, setPendingDAEvent,
           advanceScenario, resolveDAEvent,
+          useDarkAbility, craftItem,
           addLog,
         }}
       />
