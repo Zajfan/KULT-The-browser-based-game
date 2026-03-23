@@ -7,6 +7,19 @@
     <meta name="description" content="KULT: City of Chains — A dark horror browser RPG" />
     <meta name="theme-color" content="#080808" />
     <title>KULT: City of Chains</title>
+    <style>
+      body { margin: 0; background: #08080f; }
+      #root:empty::before {
+        content: '⛧';
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #3a3020;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
