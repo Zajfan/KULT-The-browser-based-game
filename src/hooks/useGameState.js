@@ -46,6 +46,7 @@ export function useGameState() {
   const [combat,setCombat]=useState(null);
   const [activeModal,setActiveModal]=useState(null);
   const [pendingEvent,setPendingEvent]=useState(null);
+  const [pendingDAEvent,setPendingDAEvent]=useState(null);
   const T=useRef({});
 
   useEffect(()=>{
