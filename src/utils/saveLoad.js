@@ -14,15 +14,23 @@ export function loadGame() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     return raw ? JSON.parse(raw) : null;
-  } catch (e) {
+  } catch {
     return null;
   }
 }
 
 export function deleteSave() {
-  localStorage.removeItem(SAVE_KEY);
+  try {
+    localStorage.removeItem(SAVE_KEY);
+  } catch {
+    // ignore
+  }
 }
 
 export function hasSave() {
-  return !!localStorage.getItem(SAVE_KEY);
+  try {
+    return !!localStorage.getItem(SAVE_KEY);
+  } catch {
+    return false;
+  }
 }

@@ -7,8 +7,6 @@ import { FACTIONS } from '../data/factions.js';
 import { LOCATIONS, ACTION_LABELS } from '../data/locations.js';
 import { rollForEvent } from '../data/events.js';
 import { getDAEventForTrigger, shouldTriggerDAEvent } from '../data/deathAngel_events.js';
-import { getDeathAngelForSecret } from '../data/deathAngels.js';
-import { checkQuestProgress } from '../data/quests.js';
 
 const WOUND_LEVELS = ['None','Stabilized','Serious','Critical','Mortal'];
 const AP_REGEN_MS=30000, AP_AMT=5, NERVE_MS=60000, NERVE_AMT=3, TIME_MS=120000;
@@ -172,7 +170,7 @@ export function useGameState() {
       const t = triggers[Math.floor(Math.random()*triggers.length)];
       checkDAEvent(t);
     }
-  },[character,applyDelta,addLog,maybeFireEvent]);
+  },[character,applyDelta,addLog,maybeFireEvent,checkDAEvent]);
 
   const attackEnemy=useCallback(()=>{
     if(!combat)return;

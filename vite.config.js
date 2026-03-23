@@ -7,6 +7,9 @@ export default defineConfig({
   server: { port: 5173 },
   build: {
     outDir: 'docs',
+    // emptyOutDir: true ensures a clean build. Static files (e.g. .nojekyll)
+    // are placed in public/ so Vite copies them automatically on every build.
+    emptyOutDir: true,
     sourcemap: false,
     cssCodeSplit: false,
     rollupOptions: {

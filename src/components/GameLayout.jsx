@@ -31,7 +31,7 @@ import { getDeathAngelForSecret } from '../data/deathAngels.js';
 import { getTimeDescription } from './ui/timeUtils.js';
 import { checkQuestProgress } from '../data/quests.js';
 import { checkScenarioProgress, applyScenarioUpdates } from '../utils/scenarioTracker.js';
-import { checkWorldEventTriggers, WORLD_EVENT_TRIGGERS } from '../data/worldEvents.js';
+import { WORLD_EVENT_TRIGGERS } from '../data/worldEvents.js';
 import { INSIGHT_EVENTS } from '../data/awakening.js';
 import styles from './GameLayout.module.css';
 
@@ -70,7 +70,7 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
     updateNPCTrust, resolveEvent,
     setPendingEvent, setCharacter,
     pendingDAEvent, setPendingDAEvent,
-    advanceScenario, resolveDAEvent,
+    resolveDAEvent,
     addLog,
   } = actions;
 
@@ -241,14 +241,19 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
         <StatusStrip character={character} timeDesc={timeDesc} />
         <div className={styles.content}>
           <div className={styles.viewPane}>
-            {view==='city'      && <CityView      character={character} onTravel={travel} onAction={handleAction} onTrain={performTraining} addToast={addToast} />}
-            {view==='crimes'    && <CrimesView    character={character} onCommit={handleCrime} />}
-            {view==='rituals'   && <RitualsView   character={character} onPerform={performRitual} />}
-            {view==='market'    && <MarketView    character={character} onBuy={buyItem} onSell={sellItem} />}
-            {view==='factions'  && <FactionsView  character={character} />}
-            {view==='inventory' && <InventoryView character={character} onUse={useItem} onEquip={equipItem} onSell={sellItem} />}
-            {view==='quests'    && <QuestView     character={character} />}
-            {view==='character' && <CharacterView character={character} />}
+            {view==='city'         && <CityView      character={character} onTravel={travel} onAction={handleAction} onTrain={performTraining} addToast={addToast} />}
+            {view==='crimes'       && <CrimesView    character={character} onCommit={handleCrime} />}
+            {view==='rituals'      && <RitualsView   character={character} onPerform={performRitual} />}
+            {view==='market'       && <MarketView    character={character} onBuy={buyItem} onSell={sellItem} />}
+            {view==='factions'     && <FactionsView  character={character} />}
+            {view==='inventory'    && <InventoryView character={character} onUse={useItem} onEquip={equipItem} onSell={sellItem} />}
+            {view==='quests'       && <QuestView     character={character} />}
+            {view==='character'    && <CharacterView character={character} />}
+            {view==='overview'     && <OverviewView  character={character} />}
+            {view==='scenarios'    && <ScenarioView  character={character} />}
+            {view==='transmission' && <TransmissionView character={character} />}
+            {view==='archives'     && <ArchivesView  character={character} />}
+            {view==='lore'         && <LoreView      character={character} />}
           </div>
           <NarrativeFeed log={character?.log} />
         </div>
