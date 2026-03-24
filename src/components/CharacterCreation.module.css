@@ -6,9 +6,11 @@
   container-name: creation;
   width: 100vw;
   height: 100vh;
+  height: 100dvh; /* Dynamic viewport height — keeps footer above mobile browser chrome */
   background: var(--void);
   display: grid;
   grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr); /* Prevent step-bar content from widening the column */
   overflow: hidden;
 
   &::before {
@@ -35,6 +37,7 @@
   padding: 0 24px;
   height: 52px;
   flex-shrink: 0;
+  overflow: hidden; /* Prevent step labels from expanding the grid column */
 }
 
 .backBtn { margin-right: 20px; }
@@ -288,6 +291,14 @@
   &.neg { color: var(--red-vivid); }
 }
 
+/* Continue prompt at the bottom of the attribute step */
+.stepContinue {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-bottom: 4px;
+}
+
 /* ── Advantages ── */
 .advLayout {
   display: grid;
@@ -422,6 +433,11 @@
   .factionGrid   { grid-template-columns: 1fr; }
   .summary       { grid-template-columns: 1fr; }
   .body          { padding: 24px 20px; }
+  .progress      { padding: 0 8px; }
+  .backBtn       { margin-right: 8px; }
+  .step          { padding: 0 6px; min-width: 0; }
+  .stepLabel     { display: none; }
+  .footer        { padding: 10px 16px; }
 }
 
 } /* @layer */
@@ -470,3 +486,9 @@
 }
 .passionInput { font-family: var(--serif) !important; font-size: 0.85rem !important; }
 .passionNote { font-size: 0.75rem; color: var(--ink-dim); font-style: italic; margin-top: 8px; max-width: 500px; }
+
+/* Body scroll area padding — mobile override outside @layer so it takes precedence over the
+   reset layer's `* { padding: 0 }` regardless of stylesheet load order */
+@media (max-width: 700px) {
+  .body { padding: 24px 20px; }
+}
