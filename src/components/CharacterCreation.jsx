@@ -163,6 +163,11 @@ export default function CharacterCreation({ onStart, onBack }) {
           );
         })}
       </div>
+      <div className={styles.stepContinue}>
+        <button className='act act-gold' onClick={()=>setStep(s=>s+1)}>
+          Continue to Advantages →
+        </button>
+      </div>
     </>
   );
 
