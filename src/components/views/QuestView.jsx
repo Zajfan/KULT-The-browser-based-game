@@ -1,7 +1,22 @@
-import { QUEST_CHAINS, getAvailableQuests, getQuestProgress } from '../../data/quests.js';
+import { getAvailableQuests, getQuestProgress } from '../../data/quests.js';
+import { getSideCasesForInsight } from '../../data/side_cases.js';
 import styles from './QuestView.module.css';
+
 export default function QuestView({ character }) {
   const quests = getAvailableQuests(character);
+  const sideCases = getSideCasesForInsight(character.insight ?? 0);
+
+  // Sort: intro quest first, then incomplete, then done
+  const sorted = [...quests].sort((a, b) => {
+    if (a.isIntro && !b.isIntro) return -1;
+    if (!a.isIntro && b.isIntro) return 1;
+    const pa = getQuestProgress(character, a.id);
+    const pb = getQuestProgress(character, b.id);
+    if (pa.completed && !pb.completed) return 1;
+    if (!pa.completed && pb.completed) return -1;
+    return 0;
+  });
+
   return (
     <div className={styles.page}>
       <h2 className={styles.title}>Investigations</h2>
@@ -9,14 +24,17 @@ export default function QuestView({ character }) {
       <div className='rule-blood' />
       {quests.length === 0 && <p className='italic dim' style={{marginTop:20}}>No active investigations. Explore the city and its inhabitants.</p>}
       <div className={styles.list}>
-        {quests.map(quest => {
+        {sorted.map(quest => {
           const p = getQuestProgress(character, quest.id);
           const stage = quest.stages[p.stageIdx];
           const done = p.completed;
           return (
-            <div key={quest.id} className={`${styles.quest} ${done?styles.done:''}`}>
+            <div key={quest.id} className={`${styles.quest} ${done?styles.done:''} ${quest.isIntro&&!done?styles.introQuest:''}`}>
               <div className={styles.qHead}>
-                <span className={styles.qName}>{quest.name}</span>
+                <span className={styles.qName}>
+                  {quest.isIntro && !done && <span className={styles.introTag}>★ Start Here</span>}
+                  {quest.name}
+                </span>
                 <div className={styles.pips}>
                   {quest.stages.map((_,i)=>(
                     <div key={i} className={`${styles.pip} ${i<p.stageIdx?styles.pipDone:i===p.stageIdx&&!done?styles.pipNow:''}`}/>
@@ -45,6 +63,32 @@ export default function QuestView({ character }) {
           );
         })}
       </div>
+
+      {/* Side Cases */}
+      {sideCases.length > 0 && (
+        <>
+          <hr className='rule' style={{margin:'28px 0 16px'}} />
+          <h3 className={styles.sideCasesTitle}>Side Cases</h3>
+          <p className={styles.sub}>Shorter threads. One session each. Can be pursued alongside anything else.</p>
+          <div className={styles.sideCaseList}>
+            {sideCases.map(c => (
+              <div key={c.id} className={styles.sideCase}>
+                <div className={styles.scHead}>
+                  <span className={styles.scName}>{c.name}</span>
+                  <span className={styles.scTheme}>{c.theme}</span>
+                </div>
+                <p className={styles.scHook}>{c.hook}</p>
+                <div className={styles.scMeta}>
+                  <span className='mono dim' style={{fontSize:'0.62rem'}}>{c.estimatedLength}</span>
+                  {c.insightRequired > 0 && (
+                    <span className='mono dim' style={{fontSize:'0.62rem'}}>Insight {c.insightRequired}+ required</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

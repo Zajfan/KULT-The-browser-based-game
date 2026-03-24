@@ -67,4 +67,47 @@
 .sideCase { margin-bottom: 10px; }
 .scName { font-family: var(--display); font-size: 0.78rem; color: var(--gold); display: block; margin-bottom: 3px; }
 .scHook { font-size: 0.72rem; font-style: italic; color: var(--ink-dim); line-height: 1.5; }
+
+/* Getting Started / First Steps guidance panel */
+.guidancePanel {
+  border: 1px solid var(--gold-dark);
+  border-radius: var(--radius);
+  background: color-mix(in oklch, var(--gold) 5%, var(--surface));
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.guidanceHeader { display: flex; align-items: flex-start; gap: 12px; }
+.guidanceGlyph { font-size: 1.4rem; color: var(--gold); line-height: 1; flex-shrink: 0; }
+.guidanceTitle { font-family: var(--display); font-size: 1rem; color: var(--gold); margin-bottom: 2px; }
+.guidanceSub { font-size: 0.68rem; font-style: italic; color: var(--ink-dim); }
+.guidanceStep {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  background: color-mix(in oklch, var(--surface) 80%, transparent);
+  border: 1px solid var(--border-lit);
+  border-radius: var(--radius);
+}
+.guidanceWhere { font-family: var(--display); font-size: 0.8rem; color: var(--ink-bright); }
+.guidanceAction { font-size: 0.72rem; color: var(--gold); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; }
+.guidanceTip { font-size: 0.78rem; font-style: italic; color: var(--ink-dim); line-height: 1.55; margin-top: 4px; }
+.guidanceBuildHint {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 12px;
+  border-left: 2px solid var(--gold-dark);
+}
+.guidanceBuildLabel { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; font-family: var(--display); color: var(--gold); }
+.guidanceBuildText { font-size: 0.76rem; font-style: italic; color: var(--ink-dim); line-height: 1.5; }
+.guidanceQuickRef { display: flex; flex-direction: column; gap: 6px; }
+.guidanceRefTitle { font-family: var(--display); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-dim); margin-bottom: 4px; }
+.guidanceRefGrid { display: flex; flex-direction: column; gap: 5px; }
+.guidanceRefItem { display: flex; gap: 10px; align-items: baseline; }
+.guidanceRefKey { font-family: var(--mono); font-size: 0.66rem; color: var(--gold); min-width: 90px; flex-shrink: 0; }
+.guidanceRefVal { font-size: 0.72rem; color: var(--ink-dim); font-style: italic; line-height: 1.45; }
 } /* @layer */
