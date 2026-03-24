@@ -291,11 +291,11 @@ export default function CharacterCreation({ onStart, onBack }) {
                 className='field'
                 type='text'
                 placeholder={idx === 0 ? 'Your most important Passion...' : idx === 1 ? 'Optional second Passion...' : 'Optional third Passion...'}
-                value={form.passions[idx] || ''}
+                value={form.passions[idx]?.description || ''}
                 maxLength={120}
                 onChange={e => {
                   const newP = [...form.passions];
-                  newP[idx] = e.target.value;
+                  newP[idx] = { ...newP[idx], description: e.target.value };
                   setForm(f => ({...f, passions: newP}));
                 }}
               />
@@ -350,12 +350,12 @@ export default function CharacterCreation({ onStart, onBack }) {
               <p style={{fontSize:'0.78rem',color:'var(--ink)'}}>{form.advantages.map(a=>a.name).join(', ')}</p>
             </div>
           )}
-          {form.passions.filter(Boolean).length > 0 && (
+          {form.passions.filter(p => p?.description).length > 0 && (
             <div className={styles.summaryBlock} style={{gridColumn:'1/-1'}}>
               <span className={styles.summaryLabel}>Passions</span>
               <div style={{display:'flex',flexDirection:'column',gap:4}}>
-                {form.passions.filter(Boolean).map((p,i) => (
-                  <span key={i} style={{fontSize:'0.78rem',color:'var(--ink)',fontStyle:'italic'}}>{i+1}. {p}</span>
+                {form.passions.filter(p => p?.description).map((p,i) => (
+                  <span key={i} style={{fontSize:'0.78rem',color:'var(--ink)',fontStyle:'italic'}}>{i+1}. {p.description}</span>
                 ))}
               </div>
             </div>
