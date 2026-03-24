@@ -16,8 +16,13 @@ export default function EventOverlay({ event, character, onResolve, onDismiss })
       else if (outcome==='partial')  { text=choice.partialText; rewards.thalers=choice.thalers?.partial; rewards.insightGain=choice.insightGain?.partial; consequences.stabilityLoss=choice.stabilityLoss?.partial; }
       else                           { text=choice.failureText; rewards.thalers=choice.thalers?.failure; consequences.stabilityLoss=choice.stabilityLoss?.failure; }
       if (choice.factionReward) rewards.factionReward={faction:choice.factionReward.faction, amount:choice.factionReward.amount?.[outcome]};
+      // Heat changes: bribe/talk reduces heat on success, running raises it
+      if (choice.heatReduction && outcome !== 'failure') rewards.heatReduction = outcome === 'complete' ? choice.heatReduction : Math.floor(choice.heatReduction / 2);
+      if (choice.heatGain) consequences.heatGain = choice.heatGain;
+      // Bribe cost is always deducted when a bribe choice is made
+      if (choice.bribeCost) rewards.thalers = (rewards.thalers || 0) - choice.bribeCost;
     }
-    Object.keys(rewards).forEach(k=>{ if(!rewards[k]) delete rewards[k]; });
+    Object.keys(rewards).forEach(k=>{ if(!rewards[k] && rewards[k] !== 0) delete rewards[k]; });
     Object.keys(consequences).forEach(k=>{ if(!consequences[k]) delete consequences[k]; });
     setResult({outcome, text, rewards, consequences});
     onResolve(outcome, rewards, consequences);
@@ -39,6 +44,7 @@ export default function EventOverlay({ event, character, onResolve, onDismiss })
                   <div className={styles.choiceMeta}>
                     {c.attribute && <span className='mono dim' style={{fontSize:'0.67rem'}}>rolls <span className='gold'>{c.attribute}</span> ({character.attributes[c.attribute]>=0?'+':''}{character.attributes[c.attribute]||0})</span>}
                     {c.apCost>0 && <span className='mono' style={{fontSize:'0.67rem',color:'var(--veil-lit)'}}>{c.apCost} AP</span>}
+                    {c.bribeCost>0 && <span className='mono' style={{fontSize:'0.67rem',color:'var(--gold)'}}>₮{c.bribeCost}</span>}
                   </div>
                 </button>
               ))}
@@ -51,8 +57,11 @@ export default function EventOverlay({ event, character, onResolve, onDismiss })
               <p className={styles.resultText}>{result.text}</p>
               <div className={styles.tags}>
                 {result.rewards.thalers>0 && <span className='badge badge-gold'>₮+{result.rewards.thalers}</span>}
+                {result.rewards.thalers<0 && <span className='badge badge-red'>₮{result.rewards.thalers}</span>}
                 {result.rewards.insightGain>0 && <span className='badge badge-gold'>Insight +{result.rewards.insightGain}</span>}
                 {result.consequences.stabilityLoss>0 && <span className='badge badge-red'>Stability −{result.consequences.stabilityLoss}</span>}
+                {result.rewards.heatReduction>0 && <span className='badge badge-dim'>Heat −{result.rewards.heatReduction}</span>}
+                {result.consequences.heatGain>0 && <span className='badge badge-red'>Heat +{result.consequences.heatGain}</span>}
               </div>
               <button className='act act-sm' style={{marginTop:10}} onClick={onDismiss}>Continue</button>
             </div>

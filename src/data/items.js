@@ -65,6 +65,10 @@ export const ITEMS = {
   warded_coat:     { id:"warded_coat",     name:"Warded Coat",             type:"armor", defense:2, magicDefense:2, price:0, icon:"🧥", description:"A reinforced coat with warding sigils sewn inside. Offers both physical and supernatural protection.", crafted:true, supernatural:true },
   sight_draught:   { id:"sight_draught",   name:"Sight Draught",           type:"consumable", effect:"gain_insight",   value:1, price:0,   icon:"💧", skipStabilityLoss:true, description:"Laudanum infused with veil glass dust. Grants 1 Insight without Stability cost.", crafted:true, supernatural:true },
   void_blade_plus: { id:"void_blade_plus", name:"Consecrated Void Blade",  type:"weapon", damage:"3d6+2", bonus:3, price:0, icon:"🗡", description:"A void-touched blade consecrated with an archon shard fragment. The most dangerous weapon you can carry.", crafted:true, supernatural:true },
+  entity_ward:     { id:"entity_ward",     name:"Entity Ward",             type:"armor", defense:0, magicDefense:3, price:0, icon:"⛧", description:"Bone runes bound into a warding amulet. Powerful protection against supernatural horrors.", crafted:true, supernatural:true },
+  precision_toxin: { id:"precision_toxin", name:"Precision Toxin",         type:"consumable", effect:"restore_nerve",  value:50, price:0, icon:"🧪", description:"A refined stimulant compound. Restores 50 Nerve and sharpens perception for the next action.", crafted:true },
+  void_mirror_ward:{ id:"void_mirror_ward",name:"Anchored Void Mirror",    type:"armor", defense:1, magicDefense:4, price:0, icon:"🪞", description:"A void mirror anchored with an iron amulet. Deflects both bullets and entity attention.", crafted:true, supernatural:true },
+  labyrinth_map:   { id:"labyrinth_map",   name:"Charted Labyrinth",       type:"key_item", effect:"navigation", value:3, price:0, icon:"🗺", description:"The Map of Nowhere annotated with Labyrinth coordinates gleaned from ritual insight.", crafted:true, supernatural:true },
 };
 
 export const MARKET_STOCK = {

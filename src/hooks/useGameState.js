@@ -5,7 +5,7 @@ import { ITEMS, getItem } from '../data/items.js';
 import { getEnemiesForLocation } from '../data/enemies.js';
 import { FACTIONS } from '../data/factions.js';
 import { LOCATIONS, ACTION_LABELS } from '../data/locations.js';
-import { rollForEvent } from '../data/events.js';
+import { rollForEvent, getHeatEncounter } from '../data/events.js';
 import { getDAEventForTrigger, shouldTriggerDAEvent } from '../data/deathAngel_events.js';
 import { RECIPES } from '../data/crafting.js';
 
@@ -94,6 +94,17 @@ export function useGameState() {
     if(loc.unlockInsight>(character?.insight||0)){addLog({type:'error',text:`Insight ${character?.insight} too low (requires ${loc.unlockInsight}).`});return;}
     setCharacter(c=>({...c,location:locId}));
     addLog({type:'travel',text:`→ ${loc.name}. ${loc.description}`});
+    // Police heat encounter check during travel
+    const heat = character?.heat || 0;
+    if (heat > 40) {
+      const encounterChance = heat > 70 ? 0.5 : 0.25;
+      if (Math.random() < encounterChance) {
+        const encounter = getHeatEncounter(heat);
+        if (encounter) {
+          setPendingEvent(encounter);
+        }
+      }
+    }
   },[character,addLog]);
 
   const maybeFireEvent=useCallback((locationId)=>{
@@ -135,6 +146,8 @@ export function useGameState() {
     if(rewards.insightGain)  applyDelta({insight:rewards.insightGain,stats:{insightGained:rewards.insightGain}});
     if(rewards.factionReward)applyDelta({factionReward:rewards.factionReward});
     if(consequences.stabilityLoss) applyDelta({stability:-consequences.stabilityLoss,stats:{stabilityLost:consequences.stabilityLoss}});
+    if(rewards.heatReduction) setCharacter(c=>({...c,heat:Math.max(0,(c.heat||0)-rewards.heatReduction)}));
+    if(consequences.heatGain) setCharacter(c=>({...c,heat:Math.min(c.maxHeat||100,(c.heat||0)+consequences.heatGain)}));
     addLog({type:outcome,text:`[Encounter resolved: ${outcome}]`});
   },[applyDelta,addLog]);
 
