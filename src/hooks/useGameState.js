@@ -8,6 +8,7 @@ import { LOCATIONS, ACTION_LABELS } from '../data/locations.js';
 import { rollForEvent, getHeatEncounter } from '../data/events.js';
 import { getDAEventForTrigger, shouldTriggerDAEvent } from '../data/deathAngel_events.js';
 import { RECIPES } from '../data/crafting.js';
+import { createPassion } from '../data/passions.js';
 
 const WOUND_LEVELS = ['None','Stabilized','Serious','Critical','Mortal'];
 const AP_REGEN_MS=30000, AP_AMT=5, NERVE_MS=60000, NERVE_AMT=3, TIME_MS=120000;
@@ -33,7 +34,7 @@ export function createNewCharacter(form) {
     equippedWeapon:null, equippedArmor:null,
     rituals:ds?.id==='occultist'?['seeking','warding']:[],
     location:'residential', npcTrust:{}, recentEventIds:[], trainingProgress:{},
-    passions: form.passions || [],
+    passions: (form.passions || []).filter(p => p?.description?.trim()).map(p => createPassion(p.typeId || 'person', p.description)),
         log:[{id:Date.now(),type:'system',timestamp:new Date().toLocaleTimeString(),
       text:`You wake into the Illusion as ${form.name}. Dark secret: ${ds?.name||'Unknown'}. Something is different today.`}],
     stats:{actionsPerformed:0,crimesCommitted:0,entitiesDefeated:0,ritualsPerformed:0,stabilityLost:0,insightGained:0,thalersEarned:0,daysPlayed:1},

@@ -7,6 +7,7 @@ const STATS = [['actionsPerformed','Actions'],['crimesCommitted','Crimes'],['ent
 
 export default function CharacterView({ character }) {
   const session = character.createdAt ? Math.floor((Date.now()-character.createdAt)/60000) : 0;
+  const activePassions = (character.passions || []).filter(p => p?.description);
   return (
     <div className={styles.page}>
       <div className={styles.identity}>
@@ -54,6 +55,18 @@ export default function CharacterView({ character }) {
                   <div key={d.id} className={styles.trait}>
                     <span className='badge badge-red'>{d.name}</span>
                     <span style={{fontSize:'0.7rem',color:'var(--ink-dim)',fontStyle:'italic'}}>{d.description}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          {activePassions.length > 0 && (
+            <>
+              <h3 className={styles.sh} style={{marginTop:14}}>Passions</h3>
+              <div className={styles.traits}>
+                {activePassions.map(p => (
+                  <div key={`${p.typeId}-${p.description}`} className={styles.trait}>
+                    <span style={{fontSize:'0.78rem',color:'var(--ink)',fontStyle:'italic'}}>{p.description}</span>
                   </div>
                 ))}
               </div>
