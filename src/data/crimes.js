@@ -13,6 +13,7 @@ export const CRIMES = [
     partialText: 'You got something, but someone noticed.',
     failureText: 'Caught in the act. Run or face consequences.',
     unlockInsight: 0,
+    heatGain: { success: 2, partial: 4, failure: 8 },
   },
   {
     id: 'burglary',
@@ -28,6 +29,7 @@ export const CRIMES = [
     partialText: 'You found something but left evidence.',
     failureText: 'A silent alarm. Time to run.',
     unlockInsight: 0,
+    heatGain: { success: 4, partial: 8, failure: 15 },
   },
   {
     id: 'extortion',
@@ -43,6 +45,7 @@ export const CRIMES = [
     partialText: 'Partial payment. They\'re making calls.',
     failureText: 'They had protection you didn\'t account for.',
     unlockInsight: 0,
+    heatGain: { success: 5, partial: 8, failure: 12 },
   },
   {
     id: 'arms_dealing',
@@ -58,6 +61,7 @@ export const CRIMES = [
     partialText: 'Deal done, but you were photographed.',
     failureText: 'ATF. Three squad cars. Nowhere to go.',
     unlockInsight: 0,
+    heatGain: { success: 8, partial: 12, failure: 20 },
   },
   {
     id: 'occult_theft',
@@ -74,6 +78,7 @@ export const CRIMES = [
     partialText: 'You got it, but something in the house was aware.',
     failureText: 'The house is wrong. The house has always been wrong.',
     unlockInsight: 1,
+    heatGain: { success: 5, partial: 8, failure: 10 },
   },
   {
     id: 'ritual_crime',
@@ -91,6 +96,7 @@ export const CRIMES = [
     partialText: 'Partial success. Something heard you, but didn\'t come.',
     failureText: 'Something heard you. It came.',
     unlockInsight: 2,
+    heatGain: { success: 6, partial: 10, failure: 8 },
   },
   {
     id: 'murder',
@@ -107,6 +113,7 @@ export const CRIMES = [
     partialText: 'Done, but witnessed.',
     failureText: 'They fight back. They had backup. Now you\'re the target.',
     unlockInsight: 0,
+    heatGain: { success: 20, partial: 30, failure: 25 },
   },
   {
     id: 'cult_recruitment',
@@ -122,6 +129,7 @@ export const CRIMES = [
     partialText: 'Interested, but suspicious. Follow-up required.',
     failureText: 'They ran. Or called someone.',
     unlockInsight: 1,
+    heatGain: { success: 3, partial: 5, failure: 5 },
   },
 ];
 

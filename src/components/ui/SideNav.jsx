@@ -71,6 +71,20 @@ export default function SideNav({ views, current, onSelect, character, currentNP
           <span className={styles.vLabel}>Thalers</span>
           <span className={styles.vVal} style={{color:'var(--gold-lit)'}}>₮{character.thalers.toLocaleString()}</span>
         </div>
+        {(character.heat || 0) > 0 && (
+          <div className={styles.vital}>
+            <div className={styles.vitalRow}>
+              <span className={styles.vLabel} style={{color:'var(--red-lit)'}}>Police Heat</span>
+              <span className={styles.vVal} style={{color:'var(--red-lit)'}}>{character.heat}/{character.maxHeat}</span>
+            </div>
+            <div className='bar-wrap'>
+              <div className='bar-fill' style={{
+                width:`${(character.heat/character.maxHeat)*100}%`,
+                background:character.heat>75?'var(--red-vivid)':character.heat>50?'var(--red-lit)':'oklch(55% 0.18 35)'
+              }} />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={styles.divider} />

@@ -8,6 +8,7 @@ import CityView      from './views/CityView.jsx';
 import CrimesView    from './views/CrimesView.jsx';
 import RitualsView   from './views/RitualsView.jsx';
 import MarketView    from './views/MarketView.jsx';
+import CraftingView  from './views/CraftingView.jsx';
 import FactionsView  from './views/FactionsView.jsx';
 import InventoryView from './views/InventoryView.jsx';
 import QuestView     from './views/QuestView.jsx';
@@ -42,6 +43,7 @@ export const VIEWS = [
   { id:'crimes',       label:'Criminal Affairs',   glyph:'⚖' },
   { id:'rituals',      label:'Rites & Rituals',    glyph:'⛧' },
   { id:'market',       label:'Black Market',       glyph:'☽' },
+  { id:'crafting',     label:'Crafting',           glyph:'⚗' },
   { id:'factions',     label:'Allegiances',        glyph:'◉' },
   { id:'inventory',    label:'Possessions',        glyph:'◇' },
   { id:'quests',       label:'Investigations',     glyph:'✦' },
@@ -84,6 +86,7 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
     setPendingEvent, setCharacter,
     pendingDAEvent, setPendingDAEvent,
     resolveDAEvent,
+    useDarkAbility, craftItem,
     addLog,
   } = actions;
 
@@ -321,6 +324,7 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
             {view==='crimes'       && <CrimesView    character={character} onCommit={handleCrime} />}
             {view==='rituals'      && <RitualsView   character={character} onPerform={performRitual} />}
             {view==='market'       && <MarketView    character={character} onBuy={buyItem} onSell={sellItem} />}
+            {view==='crafting'     && <CraftingView  character={character} onCraft={craftItem} />}
             {view==='factions'     && <FactionsView  character={character} />}
             {view==='inventory'    && <InventoryView character={character} onUse={useItem} onEquip={equipItem} onSell={sellItem} />}
             {view==='quests'       && <QuestView     character={character} />}
@@ -357,7 +361,7 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
       {showMortal   && <MortalOverlay    character={character} onSeekHelp={handleSeekHelp} onDie={handleDie} />}
       {dreamState   && <DreamOverlay     character={character} day={dreamState.day} onDismiss={() => setDream(null)} />}
       {showBreakdown&& !showMortal && !dreamState && <BreakdownOverlay character={character} onResolve={resolveBreakdown} />}
-      {combat       && !showMortal && !dreamState && <CombatOverlay character={character} combat={combat} onAttack={attackEnemy} onFlee={fleeCombat} />}
+      {combat       && !showMortal && !dreamState && <CombatOverlay character={character} combat={combat} onAttack={attackEnemy} onFlee={fleeCombat} onDarkAbility={useDarkAbility} />}
       {pendingEvent && !showMortal && !dreamState && !combat && (
         <EventOverlay event={pendingEvent} character={character}
           onResolve={resolveEvent} onDismiss={() => setPendingEvent(null)} />
