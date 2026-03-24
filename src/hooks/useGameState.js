@@ -60,7 +60,28 @@ export function useGameState() {
     if(!character||screen!=='game') return;
     T.current.ap=setInterval(()=>setCharacter(c=>(!c||c.ap>=c.maxAp)?c:{...c,ap:Math.min(c.ap+AP_AMT,c.maxAp)}),AP_REGEN_MS);
     T.current.nerve=setInterval(()=>setCharacter(c=>(!c||c.nerve>=c.maxNerve)?c:{...c,nerve:Math.min(c.nerve+NERVE_AMT,c.maxNerve)}),NERVE_MS);
-    T.current.time=setInterval(()=>setCharacter(c=>{if(!c)return c;const h=(c.gameTime.hour+1)%24;const d=h===0?c.gameTime.day+1:c.gameTime.day;const newHeat=Math.max(0,(c.heat||0)-1);return{...c,gameTime:{hour:h,day:d},heat:newHeat};}),TIME_MS);
+    T.current.time=setInterval(()=>setCharacter(c=>{
+      if(!c)return c;
+      const h=(c.gameTime.hour+1)%24;
+      const d=h===0?c.gameTime.day+1:c.gameTime.day;
+      const newHeat=Math.max(0,(c.heat||0)-1);
+      let n={...c,gameTime:{hour:h,day:d},heat:newHeat};
+      // Guilt daily drain: high guilt stacks corrode stability once per day at midnight
+      if(h===0){
+        const guilt=n.guiltStacks||0;
+        if(guilt>=8){
+          // Max guilt — severe daily toll
+          n.stability=Math.max(0,(n.stability||0)-2);
+          n.nerve=Math.max(0,(n.nerve||0)-10);
+        } else if(guilt>=5){
+          // Significant guilt — moderate daily toll
+          n.stability=Math.max(0,(n.stability||0)-1);
+        }
+        // Guilt naturally decays 1 stack per day at low levels
+        if(guilt>0&&guilt<3) n.guiltStacks=guilt-1;
+      }
+      return n;
+    }),TIME_MS);
     return()=>Object.values(T.current).forEach(clearInterval);
   },[screen,character?.name]);
 
@@ -255,6 +276,10 @@ export function useGameState() {
       text+=` Heat +${heatGain}.`;
     }
     addLog({type:`crime_${result.outcome}`,text:`[${crime.name}] ${text}`});
+    // Guilt above threshold triggers Gamygyn's attention
+    const newGuilt=(character.guiltStacks||0)+(result.outcome!=='failure'?(crime.risk==='everything'?2:crime.risk==='violence'?1:0):0);
+    if(newGuilt>=5&&Math.random()<0.4) checkDAEvent('guilt_high');
+    if(newGuilt>=8) checkDAEvent('guilt_high');
   },[character,applyDelta,addLog]);
 
   const performRitual=useCallback((ritual)=>{
@@ -279,6 +304,12 @@ export function useGameState() {
       text+=` Ascension +${ascGain}.`;
     }
     addLog({type:`ritual_${result.outcome}`,text:`[Ritual: ${ritual.name}] ${text}`});
+    // Rituals of penance/binding can reduce guilt
+    if(['redemption','binding','seeking'].includes(ritual.id)&&result.outcome==='complete'){
+      setCharacter(c=>({...c,guiltStacks:Math.max(0,(c.guiltStacks||0)-1)}));
+    }
+    // High guilt makes DA events more likely after rituals
+    if((character.guiltStacks||0)>=5&&Math.random()<0.3) checkDAEvent('guilt_high');
   },[character,applyDelta,addLog]);
 
   const performTraining=useCallback((facility)=>{

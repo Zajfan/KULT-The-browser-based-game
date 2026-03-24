@@ -27,6 +27,7 @@ import BreakdownOverlay from './overlays/BreakdownOverlay.jsx';
 import DreamOverlay     from './overlays/DreamOverlay.jsx';
 import MortalOverlay    from './overlays/MortalOverlay.jsx';
 import DAEventOverlay   from './overlays/DAEventOverlay.jsx';
+import AscensionOverlay from './overlays/AscensionOverlay.jsx';
 
 import { getNPCForLocation } from '../data/npcs.js';
 import { getDeathAngelForSecret } from '../data/deathAngels.js';
@@ -35,6 +36,7 @@ import { checkQuestProgress } from '../data/quests.js';
 import { checkScenarioProgress, applyScenarioUpdates } from '../utils/scenarioTracker.js';
 import { checkWorldEventTriggers } from '../data/worldEvents.js';
 import { INSIGHT_EVENTS } from '../data/awakening.js';
+import { ITEMS } from '../data/items.js';
 import styles from './GameLayout.module.css';
 
 export const VIEWS = [
@@ -70,6 +72,7 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
   const [showBreakdown,setBreakdown]     = useState(false);
   const [dreamState,   setDream]         = useState(null); // { day }
   const [showMortal,   setMortal]        = useState(false);
+  const [showAscension,setAscension]     = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const { toasts, addToast, removeToast } = useToasts();
 
@@ -97,38 +100,54 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
 
   // ── World events: check on day change ──────────────────────────────────
   const prevDayWorldRef = useRef(character?.gameTime?.day ?? 1);
+  const triggeredWorldRef = useRef([]);
   useEffect(() => {
     if (!character) return;
     const day = character.gameTime?.day ?? 1;
     if (day <= prevDayWorldRef.current) return;
     prevDayWorldRef.current = day;
 
-    // Use functional update so we always operate on fresh state
-    let triggered = [];
+    triggeredWorldRef.current = [];
     setCharacter(c => {
       const active = c.activeWorldEvents || [];
-      triggered = checkWorldEventTriggers(c, active.map(e => e.id));
+      const triggered = checkWorldEventTriggers(c, active.map(e => e.id));
       if (!triggered.length) return c;
 
+      triggeredWorldRef.current = triggered;
       let n = { ...c };
       const newActive = [...(n.activeWorldEvents || [])];
       triggered.forEach(evt => {
-        if (evt.effect?.nerve)          n.nerve     = Math.min(Math.max(0, (n.nerve||0) + evt.effect.nerve), n.maxNerve||50);
-        if (evt.effect?.insight)        n.insight   = Math.min((n.insight||0) + evt.effect.insight, n.maxInsight||10);
-        if (evt.effect?.stabilityLoss)  n.stability = Math.max(0, (n.stability||0) - evt.effect.stabilityLoss);
-        if (evt.duration > 0)           newActive.push({ id: evt.id, expiresDay: day + evt.duration });
+        if (evt.effect?.nerve)         n.nerve     = Math.min(Math.max(0, (n.nerve||0) + evt.effect.nerve), n.maxNerve||50);
+        if (evt.effect?.insight)       n.insight   = Math.min((n.insight||0) + evt.effect.insight, n.maxInsight||10);
+        if (evt.effect?.stabilityLoss) n.stability = Math.max(0, (n.stability||0) - evt.effect.stabilityLoss);
+        if (evt.effect?.heatGain)      n.heat      = Math.min((n.heat||0) + evt.effect.heatGain, n.maxHeat||100);
+        if (evt.effect?.nerve && evt.effect.nerve > 0) n.nerve = Math.min(n.nerve, n.maxNerve||50); // cap
+        if (evt.duration > 0)          newActive.push({ id: evt.id, expiresDay: day + evt.duration });
+        // Auto-add journal entry for significant world events
+        if (['threat','supernatural','political'].includes(evt.type)) {
+          const entry = {
+            id: Date.now() + Math.random(),
+            type: evt.type === 'supernatural' ? 'entity' : 'threat',
+            title: evt.title,
+            body: evt.description,
+            createdAt: Date.now(),
+            day: n.gameTime?.day ?? 1,
+            auto: true,
+          };
+          n.journal = [entry, ...(n.journal || [])];
+        }
       });
       n.activeWorldEvents = newActive.filter(e => e.expiresDay > day);
       return n;
     });
-    // Log notifications after state update (triggered captured from updater above)
-    // Use setTimeout to ensure state has updated before logging
+
     setTimeout(() => {
-      triggered.forEach(evt => {
+      triggeredWorldRef.current.forEach(evt => {
         addLog({ type: 'system', text: `[World Event: ${evt.title}] ${evt.logText}` });
         addToast(evt.title, evt.type === 'threat' ? 'danger' : 'veil', 5000);
       });
-    }, 0);
+      triggeredWorldRef.current = [];
+    }, 50);
   }, [character?.gameTime?.day]);
 
   // ── Reactive side-effects ───────────────────────────────────────────────
@@ -145,10 +164,19 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
     // Mortal wound trigger
     if (wounds === 'Mortal' && prevWoundsRef.current !== 'Mortal') setMortal(true);
 
+    // Ascension trigger — fires once when progress reaches 100
+    if ((character.ascensionProgress ?? 0) >= 100 && !showAscension && !showMortal) {
+      setAscension(true);
+    }
+
     // Day change → dream
     if (day > prevDayRef.current) {
       setDream({ day });
       setCharacter(c => ({ ...c, stats: { ...c.stats, daysPlayed: (c.stats?.daysPlayed||1)+1 } }));
+      // Daily guilt log when stacks are significant
+      const guilt = character.guiltStacks || 0;
+      if (guilt >= 8) addLog({ type: 'system', text: `[Guilt ${guilt}/${10}] The weight of what you have done is becoming visible. Your patron has noticed.` });
+      else if (guilt >= 5) addLog({ type: 'system', text: `[Guilt ${guilt}/${10}] What you have done follows you. Stability is being eroded.` });
     }
 
     // Toasts on significant changes
@@ -165,6 +193,9 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
         setTimeout(() => {
           addToast(evt.title, 'veil', 6000);
           addLog({ type: 'system', text: `[Awakening: ${evt.title}] ${evt.text}` });
+          if (evt.stabilityLoss) {
+            setCharacter(c => ({ ...c, stability: Math.max(0, (c.stability||0) - evt.stabilityLoss) }));
+          }
         }, 1000);
       }
     }
@@ -173,7 +204,7 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
     prevWoundsRef.current    = wounds;
     prevDayRef.current       = day;
     prevInsightRef.current   = insight;
-  }, [character?.stability, character?.wounds, character?.gameTime?.day, character?.insight]);
+  }, [character?.stability, character?.wounds, character?.gameTime?.day, character?.insight, character?.ascensionProgress]);
 
   // ── Quest progress wiring ───────────────────────────────────────────────
   const trackQuestProgress = (actionId, locationId) => {
@@ -202,6 +233,27 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
         if (r.insight)  n.insight  = Math.min((n.insight||0)+r.insight, n.maxInsight||10);
         if (r.stabilityLoss) n.stability = Math.max(0, (n.stability||0) - r.stabilityLoss);
         if (r.factionReward) n.factionStandings = { ...n.factionStandings, [r.factionReward.faction]: (n.factionStandings?.[r.factionReward.faction]||0)+r.factionReward.amount };
+        // Item reward
+        if (r.item && ITEMS[r.item]) {
+          const inv = [...(n.inventory||[])];
+          const existing = inv.findIndex(i => i.id === r.item);
+          if (existing !== -1) { inv[existing] = { ...inv[existing], qty: (inv[existing].qty||1)+1 }; }
+          else { inv.push({ ...ITEMS[r.item], qty: 1 }); }
+          n.inventory = inv;
+        }
+        // Auto journal entry for completed quest stages with reward text
+        if (r.text) {
+          const journalEntry = {
+            id: Date.now() + Math.random(),
+            type: 'clue',
+            title: `[${u.questName}] ${u.stage.title}`,
+            body: r.text,
+            createdAt: Date.now(),
+            day: n.gameTime?.day ?? 1,
+            auto: true,
+          };
+          n.journal = [journalEntry, ...(n.journal || [])];
+        }
       });
       return n;
     });
@@ -244,6 +296,22 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
         if (u.scenarioComplete) ascGain += 15;
       });
       if (ascGain > 0) n = { ...n, ascensionProgress: Math.min((n.ascensionProgress||0) + ascGain, 100) };
+      // Auto-add journal entries for scenario act completions
+      const newJournalEntries = [];
+      updates.filter(u => u.actComplete && u.act?.reveals).forEach(u => {
+        newJournalEntries.push({
+          id: Date.now() + Math.random(),
+          type: 'note',
+          title: `[${u.scenarioName}] ${u.act.title}`,
+          body: u.act.reveals?.substring(0, 200) + (u.act.reveals?.length > 200 ? '…' : ''),
+          createdAt: Date.now(),
+          day: n.gameTime?.day ?? 1,
+          auto: true,
+        });
+      });
+      if (newJournalEntries.length) {
+        n = { ...n, journal: [...newJournalEntries, ...(n.journal || [])] };
+      }
       return n;
     });
 
@@ -258,7 +326,38 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
     });
   };
 
-  // ── Breakdown ──────────────────────────────────────────────────────────
+  // ── Ascension handling ────────────────────────────────────────────────
+  const handleAscension = (choice) => {
+    if (choice === 'remain') {
+      // Player stays — reduce ascension progress so it doesn't keep re-firing
+      setCharacter(c => ({ ...c, ascensionProgress: 80, ascensionChoice: 'remain' }));
+      addLog({ type: 'system', text: '[Ascension] You close the door. You remain. The city remains.' });
+      setAscension(false);
+    } else if (choice === 'merge') {
+      setCharacter(c => ({ ...c, ascensionProgress: 100, ascensionChoice: 'merge' }));
+      addLog({ type: 'system', text: '[Ascension: The Third Path] You become something that moves between layers. Neither here nor gone.' });
+      // Game continues — player exists in a transcendent state
+      setTimeout(() => {
+        setAscension(false);
+        addToast('You are the threshold. The game continues differently now.', 'veil', 8000);
+        // Grant significant rewards for the merge path
+        setCharacter(c => ({
+          ...c,
+          insight: Math.min((c.insight||0)+2, c.maxInsight||10),
+          stability: Math.min((c.stability||0)+5, c.maxStability),
+          guiltStacks: 0,
+        }));
+      }, 500);
+    } else {
+      // True ascension — game ends
+      addLog({ type: 'system', text: '[Ascension] You leave the Illusion behind. The Labyrinth receives what remains. The city forgets.' });
+      setAscension(false);
+      setTimeout(() => {
+        localStorage.clear();
+        window.location.reload();
+      }, 3000);
+    }
+  };
   const resolveBreakdown = (effect) => {
     setCharacter(c => {
       let n = { ...c };
@@ -359,10 +458,11 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
 
       {/* Overlays — priority order matters */}
       {showMortal   && <MortalOverlay    character={character} onSeekHelp={handleSeekHelp} onDie={handleDie} />}
-      {dreamState   && <DreamOverlay     character={character} day={dreamState.day} onDismiss={() => setDream(null)} />}
-      {showBreakdown&& !showMortal && !dreamState && <BreakdownOverlay character={character} onResolve={resolveBreakdown} />}
-      {combat       && !showMortal && !dreamState && <CombatOverlay character={character} combat={combat} onAttack={attackEnemy} onFlee={fleeCombat} onDarkAbility={useDarkAbility} />}
-      {pendingEvent && !showMortal && !dreamState && !combat && (
+      {showAscension && !showMortal && <AscensionOverlay character={character} onChoose={handleAscension} onDismiss={() => { setAscension(false); setCharacter(c => ({ ...c, ascensionProgress: 95 })); }} />}
+      {dreamState   && !showMortal && !showAscension && <DreamOverlay character={character} day={dreamState.day} onDismiss={() => setDream(null)} />}
+      {showBreakdown&& !showMortal && !dreamState && !showAscension && <BreakdownOverlay character={character} onResolve={resolveBreakdown} />}
+      {combat       && !showMortal && !dreamState && !showAscension && <CombatOverlay character={character} combat={combat} onAttack={attackEnemy} onFlee={fleeCombat} onDarkAbility={useDarkAbility} />}
+      {pendingEvent && !showMortal && !dreamState && !combat && !showAscension && (
         <EventOverlay event={pendingEvent} character={character}
           onResolve={resolveEvent} onDismiss={() => setPendingEvent(null)} />
       )}
@@ -371,7 +471,7 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
           onClose={() => { updateNPCTrust(currentNPC.id, 5); setNpcOpen(false); }} />
       )}
 
-      {pendingDAEvent && !showBreakdown && !showMortal && !dreamState && !combat && !pendingEvent && (
+      {pendingDAEvent && !showBreakdown && !showMortal && !dreamState && !combat && !pendingEvent && !showAscension && (
         <DAEventOverlay
           event={pendingDAEvent}
           deathAngel={getDeathAngelForSecret(character?.darkSecret?.id)}

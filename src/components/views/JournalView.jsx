@@ -110,7 +110,7 @@ export default function JournalView({ character, onUpdate }) {
           const typeInfo = ENTRY_TYPES.find(t=>t.id===entry.type);
           const isEditing = editing === entry.id;
           return (
-            <div key={entry.id} className={styles.entry} style={{'--ec': typeInfo?.color || 'var(--ink)'}}>
+            <div key={entry.id} className={`${styles.entry} ${entry.auto ? styles.autoEntry : ''}`} style={{'--ec': typeInfo?.color || 'var(--ink)'}}>
               <div className={styles.entryHead}>
                 <span className={styles.entryIcon}>{typeInfo?.icon}</span>
                 {isEditing ? (
@@ -124,6 +124,7 @@ export default function JournalView({ character, onUpdate }) {
                   </span>
                 )}
                 <span className={styles.entryDay}>Day {entry.day}</span>
+                {entry.auto && <span className={styles.autoTag}>auto</span>}
                 <button className={styles.deleteBtn} onClick={()=>deleteEntry(entry.id)}>✕</button>
               </div>
               {entry.body && !isEditing && (

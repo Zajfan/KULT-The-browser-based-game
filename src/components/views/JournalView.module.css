@@ -26,3 +26,17 @@
 .editTitle { font-size: 0.82rem; flex: 1; }
 .editBody { font-size: 0.78rem; resize: vertical; margin-left: 18px; }
 } /* @layer */
+
+/* Auto-populated entries */
+.autoEntry { opacity: 0.88; }
+.autoTag {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: var(--veil-vivid);
+  border: 1px solid var(--veil-dim);
+  border-radius: 99px;
+  padding: 1px 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  flex-shrink: 0;
+}
