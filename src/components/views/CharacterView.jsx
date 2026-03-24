@@ -99,12 +99,31 @@ export default function CharacterView({ character }) {
             <div className={styles.progItem}>
               <span style={{fontSize:'0.75rem',color:'var(--ink-dim)'}}>Guilt Stacks</span>
               <div className='pips'>
-                {Array.from({length:5},(_,i)=>(
+                {Array.from({length:10},(_,i)=>(
                   <div key={i} className={`pip ${i<(character.guiltStacks||0)?'red-on':''}`}/>
                 ))}
               </div>
+              <span className='mono' style={{fontSize:'0.68rem',color:'var(--red-lit)'}}>{character.guiltStacks||0}/10</span>
             </div>
           </div>
+
+          {Object.keys(character.trainingProgress||{}).length > 0 && (
+            <>
+              <h3 className={styles.sh} style={{marginTop:18}}>Training Progress</h3>
+              <div className={styles.trainProgress}>
+                {Object.entries(character.trainingProgress||{}).map(([attr,prog])=>(
+                  <div key={attr} className={styles.trainProg}>
+                    <span style={{fontSize:'0.72rem',color:'var(--ink-dim)',textTransform:'uppercase',letterSpacing:'0.08em'}}>{attr}</span>
+                    <div className='bar-wrap' style={{flex:1}}>
+                      <div className='bar-fill' style={{width:`${Math.min(prog*100,100)}%`,background:'var(--gold)'}}/>
+                    </div>
+                    <span className='mono' style={{fontSize:'0.65rem',color:'var(--gold)'}}>{(prog*100).toFixed(0)}%</span>
+                  </div>
+                ))}
+                <p style={{fontSize:'0.68rem',color:'var(--ink-faint)',marginTop:4,fontStyle:'italic'}}>Progress toward next attribute increase.</p>
+              </div>
+            </>
+          )}
 
           <div className={styles.danger}>
             <button className='act act-danger act-sm' onClick={()=>{if(confirm('Delete save?')){deleteSave();location.reload();}}}>

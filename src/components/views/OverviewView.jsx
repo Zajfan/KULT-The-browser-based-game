@@ -300,6 +300,64 @@ export default function OverviewView({ character }) {
               <p className={styles.scHook}>{c.hook.substring(0, 100)}...</p>
             </div>
           ))}
+
+          {/* Active Pressures — guilt, heat, world events */}
+          {((character.guiltStacks||0) > 0 || (character.heat||0) > 15 || (character.ascensionProgress||0) >= 20 || (character.activeWorldEvents||[]).length > 0) && (
+            <>
+              <hr className='rule' style={{margin:'14px 0'}} />
+              <h3 className={styles.sh}>Active Pressures</h3>
+              <div className={styles.pressures}>
+                {(character.guiltStacks||0) > 0 && (
+                  <div className={`${styles.pressure} ${(character.guiltStacks||0)>=8?styles.pressureDanger:(character.guiltStacks||0)>=5?styles.pressureWarn:styles.pressureNeutral}`}>
+                    <span className={styles.pressureIcon}>⚖</span>
+                    <div>
+                      <div className={styles.pressureName}>Guilt {character.guiltStacks}/10</div>
+                      <div className={styles.pressureDesc}>
+                        {(character.guiltStacks||0)>=8?'Severe — Gamygyn is watching. Daily stability drain active.':
+                         (character.guiltStacks||0)>=5?'Significant — stability draining each day.':
+                         'Accumulating. Below 3 it fades on its own.'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {(character.heat||0) > 15 && (
+                  <div className={`${styles.pressure} ${(character.heat||0)>70?styles.pressureDanger:(character.heat||0)>40?styles.pressureWarn:styles.pressureNeutral}`}>
+                    <span className={styles.pressureIcon}>🚔</span>
+                    <div>
+                      <div className={styles.pressureName}>Heat {character.heat}/100</div>
+                      <div className={styles.pressureDesc}>
+                        {(character.heat||0)>70?'Critical — patrol encounters likely during travel.':
+                         (character.heat||0)>40?'Elevated — police may intercept during travel.':
+                         'Moderate — reduces 1/hour automatically.'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {(character.ascensionProgress||0) >= 20 && (
+                  <div className={`${styles.pressure} ${(character.ascensionProgress||0)>=90?styles.pressureAscension:styles.pressureNeutral}`}>
+                    <span className={styles.pressureIcon}>∞</span>
+                    <div>
+                      <div className={styles.pressureName}>Ascension {character.ascensionProgress}%</div>
+                      <div className={styles.pressureDesc}>
+                        {(character.ascensionProgress||0)>=90?'The threshold is near. One more step.':
+                         (character.ascensionProgress||0)>=60?'The path is becoming visible.':
+                         'Awakening progress accumulating.'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {(character.activeWorldEvents||[]).map(evt => (
+                  <div key={evt.id} className={`${styles.pressure} ${styles.pressureWarn}`}>
+                    <span className={styles.pressureIcon}>◈</span>
+                    <div>
+                      <div className={styles.pressureName}>World Event Active</div>
+                      <div className={styles.pressureDesc}>Expires day {evt.expiresDay}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
 

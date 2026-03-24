@@ -119,19 +119,25 @@ export function useGameState() {
   const travel=useCallback((locId)=>{
     const loc=LOCATIONS[locId];if(!loc)return;
     if(loc.unlockInsight>(character?.insight||0)){addLog({type:'error',text:`Insight ${character?.insight} too low (requires ${loc.unlockInsight}).`});return;}
-    setCharacter(c=>({...c,location:locId}));
-    addLog({type:'travel',text:`→ ${loc.name}. ${loc.description}`});
+    // Travel costs AP based on danger level of destination
+    const travelCost=Math.max(5,( loc.danger||1)*5);
+    if((character?.ap||0)<travelCost){addLog({type:'error',text:`Need ${travelCost} AP to travel there.`});return;}
+    setCharacter(c=>({...c,location:locId,ap:Math.max(0,(c.ap||0)-travelCost)}));
+    addLog({type:'travel',text:`→ ${loc.name}. ${loc.description.substring(0,80)}… (−${travelCost} AP)`});
     // Police heat encounter check during travel
     const heat = character?.heat || 0;
     if (heat > 40) {
       const encounterChance = heat > 70 ? 0.5 : 0.25;
       if (Math.random() < encounterChance) {
         const encounter = getHeatEncounter(heat);
-        if (encounter) {
-          setPendingEvent(encounter);
-        }
+        if (encounter) { setPendingEvent(encounter); }
       }
     }
+    // Enemy faction standing — hostile factions have a chance to intercept
+    const archon = character?.factionStandings?.archon_aligned||0;
+    const da     = character?.factionStandings?.death_angel_aligned||0;
+    if(archon<=-50&&Math.random()<0.12){addLog({type:'system',text:'[Archon Watch] A Lictor intercepts you in transit. Nerve −5.'});setCharacter(c=>({...c,nerve:Math.max(0,(c.nerve||0)-5)}));}
+    if(da<=-50&&Math.random()<0.10){addLog({type:'system',text:'[Death Angel Servant] Something shadows you between locations. Stability −1.'});setCharacter(c=>({...c,stability:Math.max(0,(c.stability||0)-1)}));}
   },[character,addLog]);
 
   const maybeFireEvent=useCallback((locationId)=>{
@@ -191,7 +197,14 @@ export function useGameState() {
     if(['pick_fight','ambush_enemy','face_nepharite'].includes(actionId)){const enemies=getEnemiesForLocation(character.location);const enemy={...enemies[Math.floor(Math.random()*enemies.length)]};enemy.currentHp=enemy.hp;setCombat({enemy,round:1,log:[]});addLog({type:'combat',text:`⚔ ${enemy.name} — ${enemy.description}`});return;}
     const AMAP={search_apartment:'perception',speak_neighbor:'coolness',train_home:'fortitude',work_job:'reason',meet_contact:'coolness',research_library:'reason',bribe_official:'coolness',commit_crime:'perception',find_informant:'coolness',buy_contraband:'coolness',network_awakened:'soul',trade_information:'coolness',find_ritual:'intuition',access_backroom:'intuition',research_lore:'reason',find_pattern:'reason',access_restricted:'perception',decode_document:'reason',speak_patient:'intuition',examine_records:'reason',attempt_escape:'reflexes',contact_entity:'soul',investigate_factory:'perception',find_cache:'perception',infiltrate_cult:'coolness',commune_entity:'soul',harvest_essence:'willpower',open_rift:'soul',confront_archon:'willpower',speak_dead:'soul',rescue_soul:'willpower',steal_secret:'intuition',bribe_doctor:'coolness'};
     const attr=AMAP[actionId]||'reason';
-    const result=rollCheck(character.attributes[attr]||0);
+    // Disadvantage mechanical effects: phobia adds -1 to relevant rolls, addiction -1 to coolness/reflexes when nerve is low
+    let attrBonus=0;
+    const disadvs=character.disadvantages||[];
+    if(disadvs.some(d=>d.id==='phobia')&&['speak_patient','contact_entity','commune_entity','open_rift'].includes(actionId)) attrBonus-=1;
+    if(disadvs.some(d=>d.id==='addiction')&&character.nerve<20&&['coolness','reflexes'].includes(AMAP[actionId]||'reason')) attrBonus-=1;
+    if(disadvs.some(d=>d.id==='chronic_pain')&&['fortitude','violence'].includes(AMAP[actionId]||'reason')) attrBonus-=1;
+    if(disadvs.some(d=>d.id==='wanted')&&['bribe_official','meet_contact','trade_information'].includes(actionId)) attrBonus-=1;
+    const result=rollCheck((character.attributes[attr]||0)+attrBonus);
     const rw={},cs={};
     if(actionId==='work_job'){if(result.outcome==='complete')rw.thalers=Math.floor(Math.random()*150)+100;else if(result.outcome==='partial')rw.thalers=Math.floor(Math.random()*80)+50;}
     if(actionId==='bribe_official'){if(character.thalers<200){addLog({type:'error',text:'Need ₮200.'});return;}applyDelta({thalers:-200});if(result.outcome==='complete'){rw.nerve=10;}else if(result.outcome==='partial'){rw.nerve=5;}else{cs.stabilityLoss=1;}}
@@ -289,10 +302,20 @@ export function useGameState() {
     if(character.thalers<ritual.thalerCost){addLog({type:'error',text:`Need ₮${ritual.thalerCost}.`});return;}
     applyDelta({ap:-ritual.apCost,thalers:-ritual.thalerCost,stats:{ritualsPerformed:1}});
     const result=rollCheck(character.attributes[ritual.attribute]||0);
+    // Faction effects on ritual outcomes
+    const archonStanding = character.factionStandings?.archon_aligned || 0;
+    const daStanding     = character.factionStandings?.death_angel_aligned || 0;
     let sl=0,text='';
-    if(result.outcome==='complete'){text=ritual.successText;if(ritual.gainInsight){applyDelta({insight:1,stats:{insightGained:1}});text+=' Insight +1.';}}
+    if(result.outcome==='complete'){
+      text=ritual.successText;
+      if(ritual.gainInsight){applyDelta({insight:1,stats:{insightGained:1}});text+=' Insight +1.';}
+      // Death Angel aligned ≥50: 25% chance of bonus Insight on success
+      if(daStanding>=50&&Math.random()<0.25){applyDelta({insight:1,stats:{insightGained:1}});text+=' [Patron favour: +1 Insight]';}
+    }
     else if(result.outcome==='partial'){text=ritual.partialText;sl=Math.ceil(ritual.stabilityRisk/2);}
     else{text=ritual.failureText;sl=ritual.stabilityRisk;}
+    // Archon aligned ≥50: reduce stability loss from rituals by 1
+    if(archonStanding>=50&&sl>0){sl=Math.max(0,sl-1);text+=' [Archon shield: −1 Stability loss]';}
     if(sl>0){applyDelta({stability:-sl,stats:{stabilityLost:sl}});text+=` −${sl} Stability.`;}
     // Rituals advance ascension progress
     if(result.outcome!=='failure'){

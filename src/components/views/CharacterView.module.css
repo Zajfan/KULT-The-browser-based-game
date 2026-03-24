@@ -21,3 +21,6 @@
 .progItem { display: flex; flex-direction: column; gap: 5px; }
 .danger { margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--border); }
 } /* @layer */
+
+.trainProgress { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.trainProg     { display: flex; align-items: center; gap: 8px; }

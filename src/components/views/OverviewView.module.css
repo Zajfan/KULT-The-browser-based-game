@@ -111,3 +111,61 @@
 .guidanceRefKey { font-family: var(--mono); font-size: 0.66rem; color: var(--gold); min-width: 90px; flex-shrink: 0; }
 .guidanceRefVal { font-size: 0.72rem; color: var(--ink-dim); font-style: italic; line-height: 1.45; }
 } /* @layer */
+
+/* Active Pressures panel */
+.pressures { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
+
+.pressure {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.pressureIcon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  width: 1.4rem;
+  text-align: center;
+  margin-top: 1px;
+}
+
+.pressureName {
+  font-family: var(--display);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.pressureDesc {
+  font-size: 0.72rem;
+  color: var(--ink-dim);
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.pressureNeutral {
+  border-color: var(--border);
+  & .pressureName { color: var(--ink); }
+}
+
+.pressureWarn {
+  border-color: color-mix(in oklch, var(--gold-dark) 60%, transparent);
+  background: color-mix(in oklch, var(--gold-shadow) 8%, var(--surface));
+  & .pressureName { color: var(--gold-lit); }
+}
+
+.pressureDanger {
+  border-color: color-mix(in oklch, var(--red-lit) 60%, transparent);
+  background: color-mix(in oklch, var(--blood-deep) 15%, var(--surface));
+  & .pressureName { color: var(--red-vivid); }
+}
+
+.pressureAscension {
+  border-color: color-mix(in oklch, var(--veil-vivid) 60%, transparent);
+  background: color-mix(in oklch, var(--veil-dim) 10%, var(--surface));
+  & .pressureName { color: var(--veil-vivid); }
+}

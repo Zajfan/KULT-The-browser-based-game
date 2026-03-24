@@ -468,7 +468,8 @@ export default function GameLayout({ character, combat, pendingEvent, actions })
       )}
       {npcOpen && currentNPC && !showMortal && (
         <NPCOverlay npc={currentNPC} character={character}
-          onClose={() => { updateNPCTrust(currentNPC.id, 5); setNpcOpen(false); }} />
+          onClose={() => { updateNPCTrust(currentNPC.id, 5); setNpcOpen(false); }}
+          onAction={(serviceId) => { handleAction(serviceId); }} />
       )}
 
       {pendingDAEvent && !showBreakdown && !showMortal && !dreamState && !combat && !pendingEvent && !showAscension && (

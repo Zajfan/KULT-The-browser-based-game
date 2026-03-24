@@ -19,13 +19,17 @@ export default function StatusStrip({ character, timeDesc, onMenuToggle }) {
   const wounds  = character?.wounds ?? 'None';
   const heat    = character?.heat ?? 0;
   const thalers = character?.thalers ?? 0;
+  const guilt   = character?.guiltStacks ?? 0;
+  const ascension = character?.ascensionProgress ?? 0;
 
   const apPct   = Math.round((ap / maxAp) * 100);
   const stabPct = Math.round((stab / maxStb) * 100);
   const heatPct = Math.round((heat / 100) * 100);
+  const ascPct  = Math.round(ascension);
 
   const stabColor = stab > maxStb * 0.5 ? 'var(--vital-lit)' : stab > maxStb * 0.25 ? 'var(--gold)' : 'var(--red-vivid)';
   const heatColor = heat > 70 ? 'var(--red-vivid)' : heat > 40 ? 'var(--red-lit)' : heat > 15 ? 'var(--gold)' : 'var(--ink-dim)';
+  const guiltColor = guilt >= 8 ? 'var(--red-vivid)' : guilt >= 5 ? 'var(--red-lit)' : 'var(--gold)';
   const thStr = thalers >= 10000 ? `₮${(thalers/1000).toFixed(1)}k` : `₮${thalers}`;
 
   return (
@@ -91,6 +95,28 @@ export default function StatusStrip({ character, timeDesc, onMenuToggle }) {
         <div className={styles.resItem} title={`Thalers: ${thalers.toLocaleString()}`}>
           <span className={styles.resVal} style={{ color: 'var(--gold-lit)' }}>{thStr}</span>
         </div>
+
+        {/* Guilt — only show if non-zero */}
+        {guilt > 0 && (
+          <div className={styles.resItem} title={`Guilt Stacks: ${guilt}/10 — high guilt drains stability daily`}>
+            <span className={styles.resLabel} style={{ color: guiltColor }}>GUILT</span>
+            <div className={styles.miniBar}>
+              <div className={styles.miniBarFill} style={{ width: `${(guilt/10)*100}%`, background: guiltColor }} />
+            </div>
+            <span className={styles.resVal} style={{ color: guiltColor }}>{guilt}</span>
+          </div>
+        )}
+
+        {/* Ascension — show when meaningful progress made */}
+        {ascension >= 20 && (
+          <div className={styles.resItem} title={`Ascension Progress: ${ascPct}%`}>
+            <span className={styles.resLabel} style={{ color: 'var(--veil-vivid)' }}>ASC</span>
+            <div className={styles.miniBar}>
+              <div className={styles.miniBarFill} style={{ width: `${ascPct}%`, background: ascPct >= 90 ? 'var(--gold-vivid)' : 'var(--veil-vivid)' }} />
+            </div>
+            <span className={styles.resVal} style={{ color: 'var(--veil-vivid)' }}>{ascPct}%</span>
+          </div>
+        )}
       </div>
     </div>
   );

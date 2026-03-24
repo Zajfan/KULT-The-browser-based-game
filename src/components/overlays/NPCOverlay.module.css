@@ -25,3 +25,28 @@
 .loreLabel { font-family:var(--display);font-size:7.5px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:5px; }
 .lore p { font-size:0.75rem;font-style:italic;color:var(--ink-dim);line-height:1.5; }
 } /* @layer */
+
+/* Trust bar */
+.trustBlock { display: flex; flex-direction: column; gap: 3px; min-width: 90px; }
+.trustRow   { display: flex; justify-content: space-between; align-items: baseline; }
+.tLabel     { font-size: 0.62rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+.tValue     { font-family: var(--display); font-size: 0.72rem; }
+.trustBar   { height: 3px; background: var(--surface-3); border-radius: 99px; overflow: hidden; }
+.trustFill  { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; margin: 8px 0 0; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.tab  { background: none; border: none; cursor: pointer; font-family: var(--display); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); padding: 4px 10px; border-radius: var(--radius) var(--radius) 0 0; transition: color 0.15s, background 0.15s; display: flex; align-items: center; gap: 5px;
+  &:hover { color: var(--ink-bright); } }
+.tabOn { color: var(--gold-lit); background: color-mix(in oklch, var(--gold-shadow) 15%, transparent); }
+.badge { background: var(--gold-dark); color: var(--gold-vivid); border-radius: 99px; font-size: 0.6rem; padding: 1px 5px; font-family: var(--mono); }
+
+/* Services */
+.serviceList { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.serviceBtn  { display: flex; justify-content: space-between; align-items: center; padding: 9px 12px; background: var(--surface-3); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: background 0.15s, border-color 0.15s; color: var(--ink);
+  &:hover { background: var(--surface-1); border-color: var(--gold-dark); } }
+.sLabel { font-size: 0.82rem; color: var(--ink-bright); }
+.sCost  { font-family: var(--mono); font-size: 0.68rem; color: var(--gold); }
+.lockedServices { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 10px; }
+.lockedHead     { font-size: 0.65rem; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+.lockedService  { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border-lit); opacity: 0.5; font-size: 0.78rem; color: var(--ink-dim); }
