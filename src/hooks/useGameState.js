@@ -35,8 +35,13 @@ export function createNewCharacter(form) {
     rituals:ds?.id==='occultist'?['seeking','warding']:[],
     location:'residential', npcTrust:{}, recentEventIds:[], trainingProgress:{},
     passions: (form.passions || []).filter(p => p?.description?.trim()).map(p => createPassion(p.typeId || 'person', p.description)),
-        log:[{id:Date.now(),type:'system',timestamp:new Date().toLocaleTimeString(),
-      text:`You wake into the Illusion as ${form.name}. Dark secret: ${ds?.name||'Unknown'}. Something is different today.`}],
+    // Intro quest is auto-started for all new characters
+    questProgress: { intro_quest: { stageIdx: 0, actionCount: 0, completed: false } },
+        log:(()=>{const t=Date.now();return[
+      {id:t,type:'system',timestamp:new Date().toLocaleTimeString(),
+      text:`You wake into the Illusion as ${form.name}. Dark secret: ${ds?.name||'Unknown'}. Something is different today.`},
+      {id:t+100,type:'system',timestamp:new Date().toLocaleTimeString(),
+      text:`[Investigation] "First Steps in the Illusion" has begun. Check the Investigations tab for guidance.`}];})(),
     stats:{actionsPerformed:0,crimesCommitted:0,entitiesDefeated:0,ritualsPerformed:0,stabilityLost:0,insightGained:0,thalersEarned:0,daysPlayed:1},
     gameTime:{day:1,hour:8}, ascensionProgress:0, guiltStacks:0, heat:0, maxHeat:100, activeEffects:[], createdAt:Date.now(),
   };

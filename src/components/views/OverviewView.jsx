@@ -3,7 +3,7 @@ import { getMilestone, getNextMilestone, INSIGHT_EVENTS } from '../../data/awake
 import { getScenariosForInsight } from '../../data/scenarios.js';
 import { getExtendedScenariosForInsight } from '../../data/scenarios_extended.js';
 import { getSideCasesForInsight } from '../../data/side_cases.js';
-import { getAvailableQuests, getQuestProgress } from '../../data/quests.js';
+import { getAvailableQuests, getQuestProgress, isIntroQuestComplete } from '../../data/quests.js';
 import { FACTIONS, getFactionRank } from '../../data/factions.js';
 import { getDeathAngelForSecret } from '../../data/deathAngels.js';
 import { getTransmission } from '../../data/transmission.js';
@@ -54,6 +54,19 @@ export default function OverviewView({ character }) {
   const stabPct = (character.stability / character.maxStability) * 100;
   const stabColor = character.stability > 6 ? 'var(--vital-lit)' : character.stability > 3 ? 'var(--gold)' : 'var(--red-vivid)';
 
+  // Show guidance panel for new/early players who haven't finished the intro quest
+  const showGuidance = !isIntroQuestComplete(character) && day <= 5;
+  const introQuestProgress = getQuestProgress(character, 'intro_quest');
+  const introStageIdx = introQuestProgress.stageIdx ?? 0;
+
+  // Intro quest stage-specific guidance
+  const INTRO_STEPS = [
+    { where: 'Residential District', action: 'Speak to Neighbor', nav: 'city', tip: 'Head to The City tab → stay in the Residential District → use "Speak to Neighbor" twice. It costs AP, which recharges over time.' },
+    { where: 'The Archives', action: 'Research Lore', nav: 'city', tip: 'Travel to the Archives in the City tab and use "Research Lore" twice. The Archives unlock at Insight 0.' },
+    { where: 'Purgatory', action: 'Access Backroom', nav: 'city', tip: 'Travel to Purgatory in the City tab and use "Access Backroom". This connects you to the Awakened Circle faction.' },
+  ];
+  const currentStep = INTRO_STEPS[Math.min(introStageIdx, INTRO_STEPS.length - 1)];
+
   return (
     <div className={styles.page}>
 
@@ -84,6 +97,56 @@ export default function OverviewView({ character }) {
       </div>
 
       <hr className='rule-blood' />
+
+      {/* First Steps / Getting Started guidance panel — shown for new players */}
+      {showGuidance && (
+        <section className={styles.guidancePanel}>
+          <div className={styles.guidanceHeader}>
+            <span className={styles.guidanceGlyph}>★</span>
+            <div>
+              <div className={styles.guidanceTitle}>Getting Started — First Steps in the Illusion</div>
+              <div className={styles.guidanceSub}>Stage {introStageIdx + 1} of 3 — Active quest in the Investigations tab</div>
+            </div>
+          </div>
+
+          <div className={styles.guidanceStep}>
+            <span className={styles.guidanceWhere}>Go to: {currentStep.where}</span>
+            <span className={styles.guidanceAction}>Action: {currentStep.action}</span>
+            <p className={styles.guidanceTip}>{currentStep.tip}</p>
+          </div>
+
+          <div className={styles.guidanceBuildHint}>
+            <span className={styles.guidanceBuildLabel}>Your Dark Secret</span>
+            <span className={styles.guidanceBuildText}>{character.darkSecret?.hint}</span>
+          </div>
+
+          <div className={styles.guidanceQuickRef}>
+            <div className={styles.guidanceRefTitle}>Quick Reference</div>
+            <div className={styles.guidanceRefGrid}>
+              <div className={styles.guidanceRefItem}>
+                <span className={styles.guidanceRefKey}>AP</span>
+                <span className={styles.guidanceRefVal}>Action Points — spent on all activities, recharges over time</span>
+              </div>
+              <div className={styles.guidanceRefItem}>
+                <span className={styles.guidanceRefKey}>Stability</span>
+                <span className={styles.guidanceRefVal}>Your grip on sanity — horror and trauma drain it; if it hits 0, you break down</span>
+              </div>
+              <div className={styles.guidanceRefItem}>
+                <span className={styles.guidanceRefKey}>Insight</span>
+                <span className={styles.guidanceRefVal}>How awake you are — higher Insight unlocks new locations, rituals, and cases</span>
+              </div>
+              <div className={styles.guidanceRefItem}>
+                <span className={styles.guidanceRefKey}>Investigations</span>
+                <span className={styles.guidanceRefVal}>Story-driven quests — check the Investigations tab for your current objectives</span>
+              </div>
+              <div className={styles.guidanceRefItem}>
+                <span className={styles.guidanceRefKey}>Major Cases</span>
+                <span className={styles.guidanceRefVal}>Longer scenarios — check Major Cases for multi-act investigations</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Awakening status */}
       <section className={styles.section}>

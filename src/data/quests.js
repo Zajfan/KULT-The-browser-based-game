@@ -2,6 +2,47 @@
 // Each quest has stages that unlock progressively.
 
 export const QUEST_CHAINS = {
+  // ─── Introductory Quest (always available, guides new players) ────────────
+  intro_quest: {
+    id: 'intro_quest',
+    name: 'First Steps in the Illusion',
+    secretRequired: null,
+    isIntro: true,
+    description: 'Something cracked in the world the day you woke up. The city you thought you knew is a shell over something older and stranger. You need to find your footing — fast.',
+    stages: [
+      {
+        id: 'intro_1',
+        title: 'Get Your Bearings',
+        description: 'You know your neighborhood. Or you thought you did. Spend time observing — the routines, the faces, the gaps in the pattern that most people never notice. This is where you start.',
+        objective: 'In the Residential District: Talk to a neighbor. (Speak to Neighbor × 2)',
+        location: 'residential',
+        action: 'speak_neighbor',
+        count: 2,
+        reward: { thalers: 150, insight: 0, item: null, text: 'A rumor. Inconsistent. Someone in this block has been missing for eleven days and nobody has filed a report. Nobody seems distressed by this.' },
+      },
+      {
+        id: 'intro_2',
+        title: 'Follow the Thread',
+        description: 'The Archives keep records that have no business existing. City histories with pages razored out. Registry entries that loop back to the same address. You need information — and information lives here.',
+        objective: 'At the Archives: Research something. (Research Lore × 2)',
+        location: 'archives',
+        action: 'research_lore',
+        count: 2,
+        reward: { thalers: 0, insight: 1, item: null, text: 'The address in the rumor appears in records going back forty years. Different tenants each time. Same circumstances each time. You are not the first person to notice.' },
+      },
+      {
+        id: 'intro_3',
+        title: 'Find Your People',
+        description: 'Purgatory is not what it looks like. It never is. The ones who know what the city actually is tend to find each other here, in the back room, in the hour before last call. You need to make contact.',
+        objective: 'At Purgatory: Access the backroom. (Access Backroom × 1)',
+        location: 'purgatory',
+        action: 'access_backroom',
+        count: 1,
+        reward: { thalers: 200, insight: 1, item: null, factionReward: { faction: 'awakened_circle', amount: 15 }, text: 'Three people who know what you are. None of them are glad about it. One of them hands you a folded card with a name and a district. "When you\'re ready," she says. "Not before."' },
+      },
+    ],
+  },
+
   // ─── Dark Secret Quests ───────────────────────────────────────────────────
   acedia_chain: {
     id: 'acedia_chain',
@@ -187,6 +228,10 @@ export const getAvailableQuests = (character) => {
     if (q.secretRequired && character.darkSecret?.id !== q.secretRequired) return false;
     return true;
   });
+};
+
+export const isIntroQuestComplete = (character) => {
+  return character.questProgress?.intro_quest?.completed === true;
 };
 
 export const getQuestProgress = (character, questId) => {
