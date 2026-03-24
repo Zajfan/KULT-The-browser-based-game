@@ -1,9 +1,9 @@
 .strip {
-  height: 36px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 20px;
+  padding: 0 16px;
   border-bottom: 1px solid var(--border);
   background: var(--deep);
   flex-shrink: 0;
@@ -18,6 +18,14 @@
   transition: color 0.15s;
 }
 .menuBtn:hover { color: var(--ink-bright); }
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-width: 0;
+}
 .location {
   font-family: var(--display);
   font-size: 8.5px;
@@ -35,11 +43,67 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 200px;
 }
 
-/* Show hamburger only on mobile */
+/* Resource strip */
+.resources {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.resItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.resLabel {
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.resVal {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.miniBar {
+  width: 36px;
+  height: 4px;
+  background: var(--surface);
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.miniBarFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.woundTag {
+  font-size: 0.68rem;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+/* Show hamburger only on mobile; hide some resources */
 @media (max-width: 767px) {
   .menuBtn { display: flex; }
   .sep { display: none; }
   .desc { display: none; }
+  .miniBar { width: 24px; }
+  .resources { gap: 8px; }
+}
+
+/* On very small screens reduce further */
+@media (max-width: 480px) {
+  .resLabel { display: none; }
+  .resources { gap: 6px; }
 }

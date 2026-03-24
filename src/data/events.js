@@ -131,6 +131,51 @@ export const RANDOM_EVENTS = [
     ],
   },
 
+  // --- HOSPITAL ---
+  {
+    id: 'night_surgeon',
+    location: 'hospital',
+    insightMin: 2,
+    timeOnly: 'night',
+    weight: 20,
+    type: 'supernatural',
+    title: 'The Night Surgeon',
+    text: 'A surgeon you have never seen before is operating in theatre three at 2 AM on a patient with no chart. The nursing staff around her move with an efficiency that doesn\'t vary. You are not supposed to be in this corridor. No one acknowledges that you are.',
+    choices: [
+      { label: 'Watch through the window', attribute: 'intuition', apCost: 15, successText: 'The surgery is not a surgery. The instruments are wrong. The patient doesn\'t appear to be human, beneath the draping. You see something that confirms a theory you\'ve had since your Insight passed a threshold.', partialText: 'You watch long enough to know this is something you shouldn\'t be seeing. The surgeon looks up. Not at you — at something behind you.', failureText: 'One of the nurses turns and holds your gaze for five full seconds. The surgeon keeps working. You are in the corridor, somehow, without knowing how you got there.', insightGain: { complete: 1, partial: 0, failure: 0 }, stabilityLoss: { complete: 1, partial: 2, failure: 2 } },
+      { label: 'Walk away', apCost: 0, autoResult: 'complete', text: 'There are things you are not ready to know. That is a legitimate choice. The hallway returns to normal.' },
+    ],
+  },
+  {
+    id: 'blood_type_anomaly',
+    location: 'hospital',
+    insightMin: 1,
+    weight: 25,
+    type: 'mundane',
+    title: 'Wrong Blood',
+    text: 'A laboratory technician stops you in the corridor. He\'s agitated. He says he\'s found blood results that don\'t match any human blood type — samples that are supposed to be from a patient currently in residence. He shouldn\'t have told anyone. He\'s telling you anyway.',
+    choices: [
+      { label: 'Investigate with him', attribute: 'reason', apCost: 20, successText: 'The blood results are real. The patient, Room 7C, has been admitted seven times in the last decade for the same injuries — impossibly consistent injuries — and discharged to the same address that city records show has been vacant since 1991.', partialText: 'You find the file, but someone has already removed the most significant pages. The remaining documentation is enough to know what was there.', failureText: 'The file has been flagged. Security arrives before you can read it. The technician claims he\'s never spoken to you.', insightGain: { complete: 1, partial: 1, failure: 0 }, stabilityLoss: { complete: 0, partial: 1, failure: 1 } },
+      { label: 'Tell him to report it through official channels', apCost: 0, autoResult: 'partial', text: 'He nods. He knows what that means. So do you. The official channels are managed by the problem.' },
+    ],
+  },
+
+  // --- INDUSTRIAL ---
+  {
+    id: 'factory_night_shift',
+    location: 'industrial',
+    insightMin: 1,
+    timeOnly: 'night',
+    weight: 20,
+    type: 'supernatural',
+    title: 'The Night Shift',
+    text: 'The factory runs three shifts. The third shift produces nothing the day workers can account for, and the day workers have learned not to ask. Tonight you have access to what the third shift actually makes.',
+    choices: [
+      { label: 'Enter the restricted floor', attribute: 'perception', apCost: 25, successText: 'The machines are producing something that cannot be boxed, shipped, or described in material terms. The workers are not workers. This floor has been like this for forty years and the product has been going somewhere continuously. You now know where.', partialText: 'You see enough. The geometric shape of the product is burned into your visual memory. It appears in your dreams for weeks without closing its eyes.', failureText: 'The floor supervisor finds you. He doesn\'t call security. He just waits for you to leave. The way he waits is the problem.', insightGain: { complete: 2, partial: 1, failure: 0 }, stabilityLoss: { complete: 1, partial: 2, failure: 1 } },
+      { label: 'Document what you can from the outside', attribute: 'perception', apCost: 10, successText: 'Enough photographs and notes to confirm something that industrial safety reports have been denying for a decade.', partialText: 'Some photographs. Enough to make you ask better questions.', failureText: 'Your equipment stops working within fifty metres of the building. The footage you got shows the sky where the factory should be.', insightGain: { complete: 1, partial: 0, failure: 0 }, stabilityLoss: { complete: 0, partial: 0, failure: 1 } },
+    ],
+  },
+
   // --- BEYOND THE VEIL ---
   {
     id: 'archon_presence',
@@ -157,6 +202,57 @@ export const getEventsForLocation = (locationId, insight, hour) => {
     if (e.timeOnly === 'day' && isNight) return false;
     return true;
   });
+};
+
+// Police heat encounter — triggered during travel when heat is high
+export const getHeatEncounter = (heat) => {
+  if (heat <= 40) return null;
+  const isHigh = heat > 70;
+  return {
+    id: isHigh ? 'police_pursuit' : 'police_stop',
+    type: 'mundane',
+    title: isHigh ? 'Police Pursuit' : 'Police Stop',
+    text: isHigh
+      ? 'Two patrol cars block the street ahead. An officer draws his weapon as you approach. Your face has been flagged — they know exactly who they\'re looking for. The net is closing.'
+      : 'A uniformed officer steps out of a doorway and flags you down. "ID. Now." His hand rests on his holster. You\'ve been noticed.',
+    choices: [
+      {
+        label: isHigh ? `Bribe heavily (₮${isHigh ? 600 : 300})` : `Bribe (₮300)`,
+        apCost: 0,
+        attribute: 'coolness',
+        bribeCost: isHigh ? 600 : 300,
+        heatReduction: isHigh ? 30 : 20,
+        successText: 'Money changes hands. The officer looks elsewhere. Your heat rating drops as the paperwork quietly disappears.',
+        partialText: 'He takes the money but radioes something in before you\'re gone. Heat reduced, but not eliminated.',
+        failureText: 'He pockets the money and makes the arrest anyway. Fine assessed.',
+        thalers: { complete: 0, partial: 0, failure: -200 },
+        stabilityLoss: { complete: 0, partial: 0, failure: 1 },
+      },
+      {
+        label: 'Talk your way out',
+        attribute: 'coolness',
+        apCost: 10,
+        heatReduction: 15,
+        successText: 'A convincing story. The officer nods, unconvinced but unable to justify the paperwork. You\'re free to go.',
+        partialText: 'He lets you go but takes your details. The heat drops slightly but you\'re in a file now.',
+        failureText: 'He\'s not buying it. A fine, a record check, and a very uncomfortable half hour. ₮200 poorer.',
+        thalers: { complete: 0, partial: 0, failure: -200 },
+        stabilityLoss: { complete: 0, partial: 0, failure: 0 },
+      },
+      {
+        label: 'Run',
+        attribute: 'reflexes',
+        apCost: 15,
+        heatReduction: 0,
+        heatGain: 15,
+        successText: 'You lose them in the alley network. Adrenaline residue. But running adds to the wanted list.',
+        partialText: 'You get away but they got a good look. Heat increases significantly.',
+        failureText: 'They catch you. Brief struggle. You\'re detained, fined, and roughed up.',
+        thalers: { complete: 0, partial: 0, failure: -300 },
+        stabilityLoss: { complete: 0, partial: 1, failure: 1 },
+      },
+    ],
+  };
 };
 
 export const rollForEvent = (locationId, insight, hour, recentEventIds = []) => {

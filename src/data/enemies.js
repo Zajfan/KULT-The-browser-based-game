@@ -16,6 +16,14 @@ export const ENEMIES = {
     description: 'He stopped believing in the law long before he stopped carrying the badge.',
     icon: '👮',
   },
+  police_detective: {
+    id: 'police_detective', name: 'Police Detective', type: 'mundane',
+    hp: 16, violence: 2, fortitude: 1, bonus: 2,
+    loot: [{ item: 'pistol', chance: 0.8 }, { item: 'false_papers', chance: 0.2 }, { thalers: [100, 250], chance: 1 }],
+    stabilityThreat: null,
+    description: 'A detective who has followed threads that most officers learn to ignore. She\'s getting close to something she shouldn\'t know about.',
+    icon: '🕵',
+  },
   cult_initiate: {
     id: 'cult_initiate', name: 'Cult Initiate', type: 'mundane',
     hp: 10, violence: 0, fortitude: 0, bonus: 0,
@@ -70,6 +78,15 @@ export const ENEMIES = {
     icon: '🦅',
     supernatural: true,
   },
+  shadow_gazer: {
+    id: 'shadow_gazer', name: 'Shadow Gazer', type: 'supernatural',
+    hp: 22, violence: 2, fortitude: 1, bonus: 2,
+    loot: [{ item: 'veil_glass', chance: 0.1 }, { item: 'bone_rune_set', chance: 0.08 }],
+    stabilityThreat: { minLoss: 3, maxLoss: 4 },
+    description: 'A being that exists only at the periphery of vision. Looking directly at it reveals nothing. Peripheral glimpses reveal too much. It feeds on the doubt between seeing and not seeing.',
+    icon: '👁',
+    supernatural: true,
+  },
   death_angel_avatar: {
     id: 'death_angel_avatar', name: 'Death Angel Avatar',  type: 'boss',
     hp: 60, violence: 5, fortitude: 5, bonus: 5,
@@ -84,12 +101,12 @@ export const ENEMIES = {
 
 export const LOCATION_ENEMIES = {
   residential:  ['street_thug'],
-  downtown:     ['corrupt_cop', 'cult_initiate'],
+  downtown:     ['corrupt_cop', 'cult_initiate', 'police_detective'],
   slums:        ['street_thug', 'corrupt_cop', 'cult_initiate'],
   industrial:   ['cult_initiate', 'cult_enforcer', 'lictors'],
-  purgatory:    ['cult_enforcer', 'lictors'],
-  asylum:       ['azghouls', 'lictors'],
-  beyond_veil:  ['nepharite', 'buzzard', 'lictors'],
+  purgatory:    ['cult_enforcer', 'lictors', 'shadow_gazer'],
+  asylum:       ['azghouls', 'lictors', 'shadow_gazer'],
+  beyond_veil:  ['nepharite', 'buzzard', 'lictors', 'shadow_gazer'],
   labyrinth:    ['azghouls', 'nepharite', 'death_angel_avatar'],
 };
 
